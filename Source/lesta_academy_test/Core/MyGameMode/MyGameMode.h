@@ -6,6 +6,8 @@
 #include "GameFramework/GameMode.h"
 #include "MyGameMode.generated.h"
 
+class USelectCharacterClassWidget;
+class APlayerCharacter;
 /**
  * 
  */
@@ -19,4 +21,25 @@ public:
 	AMyGameMode();
 
 	virtual void BeginPlay() override;
+
+protected:
+
+	UPROPERTY()
+	APlayerCharacter* Player;
+
+	void StartNewGame();
+	
+	void StartNextFight();
+	
+	void OnPlayerWonFight();
+	
+	void OnPlayerLostFight();
+
+	int32 ConsecutiveWins = 0;
+
+	UPROPERTY()
+	TSubclassOf<USelectCharacterClassWidget> SelectCharacterWidgetClass;
+
+	UFUNCTION()
+	void HandleClassSelected(const FString& CharacterClass);
 };
