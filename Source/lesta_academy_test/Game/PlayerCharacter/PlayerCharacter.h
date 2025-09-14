@@ -52,16 +52,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player")
 	FText UnitName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Player")
-	int32 MaxHP;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Player")
-	int32 CurrentHP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player")
+	int32 HP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player")
 	UWeapon* Weapon;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Player")
 	FClassLevels ClassLevels;
 
 	void InitializeRandomAttributes();

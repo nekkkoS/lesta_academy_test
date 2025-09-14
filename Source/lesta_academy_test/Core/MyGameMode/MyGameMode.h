@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "MyGameMode.generated.h"
 
+class AEnemyCharacter;
 class USelectCharacterClassWidget;
 class APlayerCharacter;
 /**
@@ -27,6 +28,9 @@ protected:
 	UPROPERTY()
 	APlayerCharacter* Player;
 
+	UPROPERTY()
+	AEnemyCharacter* Enemy;
+
 	void StartNewGame();
 	
 	void StartNextFight();
@@ -42,4 +46,14 @@ protected:
 
 	UFUNCTION()
 	void HandleClassSelected(const FString& CharacterClass);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<APlayerCharacter> PlayerBlueprintClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AEnemyCharacter> EnemyBlueprintClass;
+
+	void ShowSelectCharacterClass() const;
+
+	void StartFirstFight();
 };
