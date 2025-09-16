@@ -36,9 +36,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+	// ------ Дамаг ------
+
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
+	void AttackPerform() {}
+
+	void GetDamage() {}
 
 	
 	// ------ Здоровье ------
@@ -51,11 +56,21 @@ public:
 
 	int32 GetHP() const {return HP;}
 
+	void SetMaxHP(const int32 NewMaxHP) {MaxHP = FMath::Max(0, NewMaxHP);}
+
+	void ModifyMaxHP(const int32 Delta) {HP = FMath::Max(0, MaxHP + Delta);}
+
+	int32 GetMaxHP() const {return MaxHP;}
+
+	void ResetHP() {HP = MaxHP;}
+
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="Player")
-	int32 HP = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 HP = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 MaxHP = 0;
 	
 	// ------ Базовые статы ------
 	// TODO: Ненужные сеттеры/геттеры можно будет убрать
@@ -82,23 +97,23 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category="Player")
-	int32 Strength = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 Strength = 0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category="Player")
-	int32 Agility = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 Agility = 0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category="Player")
-	int32 Endurance = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 Endurance = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Name")
 	FText UnitName;
 	
 	// ------ ___ ------
 
 public:
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
 	UWeapon* Weapon;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Player")

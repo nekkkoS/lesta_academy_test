@@ -40,16 +40,16 @@ void AMyGameMode::BeginPlay()
 
 void AMyGameMode::StartNewGame()
 {
-	if (!PlayerBlueprintClass || !EnemyBlueprintClass)
+	if (!PlayerBlueprintClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerBlueprintClass or EnemyBlueprintClass is not set."));
+		UE_LOG(LogTemp, Error, TEXT("PlayerBlueprintClass is not set."));
 		return;
 	}
 
 	// Герой
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	FVector PlayerLocation = FVector(0.0f, 0.0f, 100.0f);
+	FVector PlayerLocation = FVector(100.0f, 0.0f, 100.0f);
 	Player = GetWorld()->SpawnActor<APlayerCharacter>(PlayerBlueprintClass, PlayerLocation,
 		FRotator::ZeroRotator, SpawnParams);
 	if (!Player)
@@ -60,67 +60,9 @@ void AMyGameMode::StartNewGame()
 	
 	Player->InitializeRandomAttributes();
 
-	if (Player->Weapon)
-	{
-		FString DamageTypeString;
-		switch (Player->Weapon->DamageType)
-		{
-		case EWeaponDamageType::Slashing:
-			DamageTypeString = TEXT("Slashing");
-			break;
-		case EWeaponDamageType::Bludgeoning:
-			DamageTypeString = TEXT("Bludgeoning");
-			break;
-		case EWeaponDamageType::Piercing:
-			DamageTypeString = TEXT("Piercing");
-			break;
-		default:
-			DamageTypeString = TEXT("Unknown");
-			break;
-		}
-		
-		UE_LOG(LogTemp, Warning, TEXT("Player Weapon: %s, Damage: %d, Type: %s"),
-			*Player->Weapon->WeaponName.ToString(),
-			Player->Weapon->BaseDamage,
-			*DamageTypeString);
-	}
 	
-	// Враг
-	FVector EnemyLocation = FVector(500.0f, 0.0f, 100.0f);
-	Enemy = GetWorld()->SpawnActor<AEnemyCharacter>(EnemyBlueprintClass, EnemyLocation,
-		FRotator::ZeroRotator, SpawnParams);
-	if (!Enemy)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to spawn enemy from blueprint"));
-		return;
-	}
-	
-	Enemy->InitializeRandomAttributes();
-
-	if (Enemy->Weapon)
-	{
-		FString DamageTypeString;
-		switch (Enemy->Weapon->DamageType)
-		{
-		case EWeaponDamageType::Slashing:
-			DamageTypeString = TEXT("Slashing");
-			break;
-		case EWeaponDamageType::Bludgeoning:
-			DamageTypeString = TEXT("Bludgeoning");
-			break;
-		case EWeaponDamageType::Piercing:
-			DamageTypeString = TEXT("Piercing");
-			break;
-		default:
-			DamageTypeString = TEXT("Unknown");
-			break;
-		}
-		
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Weapon: %s, Damage: %d, Type: %s"),
-			*Enemy->Weapon->WeaponName.ToString(),
-			Enemy->Weapon->BaseDamage,
-			*DamageTypeString);
-	}
+	// Враг (рандомный)
+	SpawnRandomEnemy(SpawnParams);
 
 
 	SimulateFights();
@@ -138,9 +80,42 @@ void AMyGameMode::OnPlayerLostFight()
 {
 }
 
+// TODO: Заменить строку на enum
 void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
 {
-	int x = 0;
+	if (CharacterClass == "Rogue")
+		Player->ClassLevels.Rogue++;
+	else if (CharacterClass == "Warrior")
+		Player->ClassLevels.Warrior++;
+	else if (CharacterClass == "Barbarian")
+		Player->ClassLevels.Barbarian++;
+}
+
+void AMyGameMode::SpawnRandomEnemy(const FActorSpawnParameters& SpawnParams)
+{
+	// TODO: чекнуть есть ли проверка на пустой массив
+	
+	// выбираем случайный класс врага
+	int32 Index = FMath::RandRange(0, EnemyBlueprintClasses.Num() - 1);
+	TSubclassOf<AEnemyCharacter> EnemyClass = EnemyBlueprintClasses[Index];
+
+	FVector EnemyLocation = FVector(500.0f, 0.0f, 100.0f);
+	Enemy = GetWorld()->SpawnActor<AEnemyCharacter>(
+		EnemyClass,
+		EnemyLocation,
+		FRotator::ZeroRotator,
+		SpawnParams
+	);
+
+	if (!Enemy)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to spawn enemy from blueprint"));
+		return;
+	}
+
+	Enemy->InitializeRandomAttributes();
+
+	UE_LOG(LogTemp, Warning, TEXT("Spawned enemy of class: %s"), *Enemy->GetClass()->GetName());
 }
 
 void AMyGameMode::ShowSelectCharacterClassWidget() const
@@ -173,10 +148,9 @@ void AMyGameMode::SimulateFights()
 	bool bPlayerTurn = Player->GetAgility() >= Enemy->GetAgility();
 	while (Player->GetHP() > 0 && Enemy->GetHP() > 0)
 	{
-		if (bPlayerTurn)
+		if (bPlayerTurn)  // Ходит игрок, Enemy цель
 		{
-			// Шанс промаха игрока
-			if (FMath::RandRange(1, 100) <= Player->GetAgility() * 10)
+			if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
 			}
@@ -188,16 +162,15 @@ void AMyGameMode::SimulateFights()
 					Enemy->GetHP());
 			}
 		}
-		else
+		else  // Ходит Enemy, игрок цель
 		{
-			// Шанс промаха врага
-			if (FMath::RandRange(1, 100) <= Enemy->GetAgility() * 10)
+			if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Player->GetAgility())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
 			}
 			else
 			{
-				int32 Damage = Enemy->GetStrength() + (Enemy->Weapon ? Enemy->Weapon->BaseDamage : 0);
+				int32 Damage = Enemy->GetStrength() + Enemy->WeaponDamage;
 				Player->ModifyHP(-Damage);
 			}
 		}

@@ -21,10 +21,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	
 	// ------ Здоровье ------
 
@@ -38,8 +34,8 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="Enemy")
-	int32 HP = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 HP = 0;
 
 	
 	// ------ Базовые статы ------
@@ -65,26 +61,29 @@ public:
 
 	int32 GetEndurance() const {return Endurance;}
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 WeaponDamage = 0;
+
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category="Enemy")
-	int32 Strength = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 Strength = 0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category="Enemy")
-	int32 Agility = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 Agility = 0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category="Enemy")
-	int32 Endurance = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	int32 Endurance = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Name")
 	FText UnitName;
 
 	// ------ ___ ------
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy")
-	UWeapon* Weapon;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
+	UWeapon* RewardWeapon;
 
 	void InitializeRandomAttributes();
 };
