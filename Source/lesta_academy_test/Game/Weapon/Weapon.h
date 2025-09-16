@@ -9,9 +9,9 @@
 UENUM(BlueprintType)
 enum class EWeaponDamageType : uint8
 {
-	Slashing,
-	Bludgeoning,
-	Piercing
+	Slashing,     // Рубящий
+	Bludgeoning,  // Дробящий
+	Piercing      // Колющий
 };
 
 /**
@@ -28,7 +28,7 @@ public:
 	FName WeaponName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 BaseDamage = 1;
+	int32 BaseDamage = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EWeaponDamageType DamageType = EWeaponDamageType::Slashing;

@@ -53,7 +53,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AEnemyCharacter> EnemyBlueprintClass;
 
-	void ShowSelectCharacterClass() const;
+	void ShowSelectCharacterClassWidget() const;
 
-	void StartFirstFight();
+	void SimulateFights();
 };

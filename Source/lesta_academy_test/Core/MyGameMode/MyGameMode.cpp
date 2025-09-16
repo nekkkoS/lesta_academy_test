@@ -34,7 +34,7 @@ void AMyGameMode::BeginPlay()
 	// TODO: Вернуть
 	// PC->SetInputMode(FInputModeUIOnly());
 
-	ShowSelectCharacterClass();
+	ShowSelectCharacterClassWidget();
 	StartNewGame();
 }
 
@@ -49,7 +49,6 @@ void AMyGameMode::StartNewGame()
 	// Герой
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
 	FVector PlayerLocation = FVector(0.0f, 0.0f, 100.0f);
 	Player = GetWorld()->SpawnActor<APlayerCharacter>(PlayerBlueprintClass, PlayerLocation,
 		FRotator::ZeroRotator, SpawnParams);
@@ -124,7 +123,7 @@ void AMyGameMode::StartNewGame()
 	}
 
 
-	StartFirstFight();
+	SimulateFights();
 }
 
 void AMyGameMode::StartNextFight()
@@ -144,7 +143,7 @@ void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
 	int x = 0;
 }
 
-void AMyGameMode::ShowSelectCharacterClass() const
+void AMyGameMode::ShowSelectCharacterClassWidget() const
 {
 	USelectCharacterClassWidget* SelectCharacterWidget = CreateWidget<USelectCharacterClassWidget>(
 		GetWorld(), SelectCharacterWidgetClass
@@ -160,7 +159,61 @@ void AMyGameMode::ShowSelectCharacterClass() const
 	SelectCharacterWidget->AddToViewport();
 }
 
-void AMyGameMode::StartFirstFight()
+void AMyGameMode::SimulateFights()
 {
+	if (!Player || !Enemy)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Player or Enemy to start fight."));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("=== Fight Started ==="));
+	UE_LOG(LogTemp, Warning, TEXT("Player HP: %d | Enemy HP: %d"), Player->GetHP(), Enemy->GetHP());
 	
+	bool bPlayerTurn = Player->GetAgility() >= Enemy->GetAgility();
+	while (Player->GetHP() > 0 && Enemy->GetHP() > 0)
+	{
+		if (bPlayerTurn)
+		{
+			// Шанс промаха игрока
+			if (FMath::RandRange(1, 100) <= Player->GetAgility() * 10)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
+			}
+			else
+			{
+				int32 Damage = Player->GetStrength() + (Player->Weapon ? Player->Weapon->BaseDamage : 0);
+				Enemy->ModifyHP(-Damage);
+				UE_LOG(LogTemp, Warning, TEXT("Player hits Enemy for %d damage! Enemy HP: %d"), Damage,
+					Enemy->GetHP());
+			}
+		}
+		else
+		{
+			// Шанс промаха врага
+			if (FMath::RandRange(1, 100) <= Enemy->GetAgility() * 10)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
+			}
+			else
+			{
+				int32 Damage = Enemy->GetStrength() + (Enemy->Weapon ? Enemy->Weapon->BaseDamage : 0);
+				Player->ModifyHP(-Damage);
+			}
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Player HP: %d | Enemy HP: %d"), Player->GetHP(), Enemy->GetHP());
+		
+		bPlayerTurn = !bPlayerTurn;
+	}
+	
+	if (Player->GetHP() > 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("=== Player Won the Fight! ==="));
+		OnPlayerWonFight();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("=== Enemy Won the Fight! ==="));
+		OnPlayerLostFight();
+	}
 }
