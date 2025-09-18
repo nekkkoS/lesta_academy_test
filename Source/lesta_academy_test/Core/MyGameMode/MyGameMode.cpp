@@ -6,6 +6,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "lesta_academy_test/Core/MyHUD/MyHUD.h"
 #include "lesta_academy_test/Core/MyPlayerController/MyPlayerController.h"
+#include "lesta_academy_test/Game/Bonuses/Bonuses/HiddenAttack/HiddenAttackBonus.h"
+#include "lesta_academy_test/Game/Bonuses/Bonuses/StrengthPlusOne/StrengthPlusOne.h"
+#include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
 #include "lesta_academy_test/Game/EnemyCharacter/EnemyCharacter.h"
 #include "lesta_academy_test/Game/PlayerCharacter/PlayerCharacter.h"
 #include "lesta_academy_test/Game/UI/SelectCharacterClassWidget/SelectCharacterClassWidget.h"
@@ -65,7 +68,7 @@ void AMyGameMode::StartNewGame()
 	SpawnRandomEnemy(SpawnParams);
 
 
-	SimulateFights();
+	// SimulateFights();
 }
 
 void AMyGameMode::StartNextFight()
@@ -89,6 +92,9 @@ void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
 		Player->ClassLevels.Warrior++;
 	else if (CharacterClass == "Barbarian")
 		Player->ClassLevels.Barbarian++;
+
+	Player->UpdateBonuses();	
+	SimulateFights();
 }
 
 void AMyGameMode::SpawnRandomEnemy(const FActorSpawnParameters& SpawnParams)
@@ -144,12 +150,14 @@ void AMyGameMode::SimulateFights()
 
 	UE_LOG(LogTemp, Warning, TEXT("=== Fight Started ==="));
 	UE_LOG(LogTemp, Warning, TEXT("Player HP: %d | Enemy HP: %d"), Player->GetHP(), Enemy->GetHP());
-	
+
+	int32 TurnNumber = 1;
 	bool bPlayerTurn = Player->GetAgility() >= Enemy->GetAgility();
 	while (Player->GetHP() > 0 && Enemy->GetHP() > 0)
 	{
 		if (bPlayerTurn)  // Ходит игрок, Enemy цель
 		{
+			Player->BonusSystem->ApplyBonuses();
 			if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));

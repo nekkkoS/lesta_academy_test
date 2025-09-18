@@ -6,7 +6,27 @@
 #include "GameFramework/Actor.h"
 #include "PlayerCharacter.generated.h"
 
+class UBonusBase;
+class UBonusSystemComponent;
 class UWeapon;
+
+UENUM(BlueprintType)
+enum class ECharacterClass : uint8
+{
+	Rogue,
+	Warrior,
+	Barbarian
+};
+
+USTRUCT(BlueprintType)
+struct FClassBonusInfo
+{
+	GENERATED_BODY()
+	
+	ECharacterClass Class;
+	int32 Level;
+	TArray<TSubclassOf<UBonusBase>> Bonuses;
+};
 
 USTRUCT(BlueprintType)
 struct FClassLevels
@@ -108,6 +128,23 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Name")
 	FText UnitName;
+
+	
+	// ------ Бонусы ------
+
+public:
+
+	void UpdateBonuses();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Bonuses")
+	UBonusSystemComponent* BonusSystem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Bonuses")
+	FClassLevels ClassLevels;
+
+private:
+
+	static TArray<FClassBonusInfo> BonusTable;
 	
 	// ------ ___ ------
 
@@ -115,9 +152,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
 	UWeapon* Weapon;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Player")
-	FClassLevels ClassLevels;
 
 	void InitializeRandomAttributes();
 };

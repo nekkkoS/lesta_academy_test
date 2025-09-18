@@ -61,6 +61,4 @@ protected:
 	void ShowSelectCharacterClassWidget() const;
 
 	void SimulateFights();
-
-	
 };
