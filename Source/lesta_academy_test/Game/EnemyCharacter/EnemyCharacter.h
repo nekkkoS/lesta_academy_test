@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "EnemyCharacter.generated.h"
 
+class UBonusSystemComponent;
 class UWeapon;
 
 UCLASS()
@@ -77,6 +78,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Name")
 	FText UnitName;
+
+	
+	// ------ Бонусы ------
+
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Bonuses")
+	UBonusSystemComponent* BonusSystem;*/
+
 
 	// ------ ___ ------
 

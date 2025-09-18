@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,5 +16,5 @@ class LESTA_ACADEMY_TEST_API UHiddenAttackBonus : public UBonusBase
 
 public:
 
-	virtual void Apply() override;
+	virtual void Apply(FFightInfo& FightInfo) override;
 };

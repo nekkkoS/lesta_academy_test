@@ -3,6 +3,7 @@
 
 #include "BonusSystemComponent.h"
 
+#include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 #include "lesta_academy_test/Game/Bonuses/Bonuses/HiddenAttack/HiddenAttackBonus.h"
 
 
@@ -42,9 +43,9 @@ void UBonusSystemComponent::AddBonus(const TSubclassOf<UBonusBase> BonusClass)
 	ActiveBonuses.Add(Bonus);
 }
 
-void UBonusSystemComponent::ApplyBonuses(APlayerCharacter* Player, AEnemyCharacter* Enemy, bool IsPlayerTurn) const
+void UBonusSystemComponent::ApplyBonuses(FFightInfo& FightInfo) const
 {
 	for (const auto& Bonus : ActiveBonuses)
-		Bonus->Apply();
+		Bonus->Apply(FightInfo);
 }
 

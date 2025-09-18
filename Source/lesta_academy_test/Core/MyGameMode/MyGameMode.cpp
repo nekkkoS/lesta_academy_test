@@ -7,7 +7,6 @@
 #include "lesta_academy_test/Core/MyHUD/MyHUD.h"
 #include "lesta_academy_test/Core/MyPlayerController/MyPlayerController.h"
 #include "lesta_academy_test/Game/Bonuses/Bonuses/HiddenAttack/HiddenAttackBonus.h"
-#include "lesta_academy_test/Game/Bonuses/Bonuses/StrengthPlusOne/StrengthPlusOne.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
 #include "lesta_academy_test/Game/EnemyCharacter/EnemyCharacter.h"
 #include "lesta_academy_test/Game/PlayerCharacter/PlayerCharacter.h"
@@ -87,20 +86,21 @@ void AMyGameMode::OnPlayerLostFight()
 void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
 {
 	if (CharacterClass == "Rogue")
+	{
 		Player->ClassLevels.Rogue++;
+		Player->BonusSystem->AddBonus(UHiddenAttackBonus::StaticClass());
+	}
 	else if (CharacterClass == "Warrior")
 		Player->ClassLevels.Warrior++;
 	else if (CharacterClass == "Barbarian")
 		Player->ClassLevels.Barbarian++;
-
-	Player->UpdateBonuses();	
+	
 	SimulateFights();
 }
 
 void AMyGameMode::SpawnRandomEnemy(const FActorSpawnParameters& SpawnParams)
 {
 	// TODO: чекнуть есть ли проверка на пустой массив
-	
 	// выбираем случайный класс врага
 	int32 Index = FMath::RandRange(0, EnemyBlueprintClasses.Num() - 1);
 	TSubclassOf<AEnemyCharacter> EnemyClass = EnemyBlueprintClasses[Index];
@@ -157,14 +157,13 @@ void AMyGameMode::SimulateFights()
 	{
 		if (bPlayerTurn)  // Ходит игрок, Enemy цель
 		{
-			Player->BonusSystem->ApplyBonuses();
 			if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
 			}
 			else
 			{
-				int32 Damage = Player->GetStrength() + (Player->Weapon ? Player->Weapon->BaseDamage : 0);
+				const int32 Damage = CalculateFight(Player, Enemy, TurnNumber, true);
 				Enemy->ModifyHP(-Damage);
 				UE_LOG(LogTemp, Warning, TEXT("Player hits Enemy for %d damage! Enemy HP: %d"), Damage,
 					Enemy->GetHP());
@@ -183,7 +182,8 @@ void AMyGameMode::SimulateFights()
 			}
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Player HP: %d | Enemy HP: %d"), Player->GetHP(), Enemy->GetHP());
-		
+
+		TurnNumber++;
 		bPlayerTurn = !bPlayerTurn;
 	}
 	
@@ -197,4 +197,35 @@ void AMyGameMode::SimulateFights()
 		UE_LOG(LogTemp, Warning, TEXT("=== Enemy Won the Fight! ==="));
 		OnPlayerLostFight();
 	}
+}
+
+int32 AMyGameMode::CalculateFight(const APlayerCharacter* InPlayer, const AEnemyCharacter* InEnemy,
+	const int32 TurnNumber, const bool IsPlayerTurn)
+{
+	if (IsPlayerTurn)
+	{
+		FFightInfo FightInfo = {
+			0, InPlayer->GetStrength(),
+			InPlayer->GetAgility(),
+			InPlayer->GetEndurance(),
+			InPlayer->Weapon->BaseDamage,
+			InPlayer->Weapon->DamageType,
+			InEnemy->GetStrength(),
+			InEnemy->GetAgility(),
+			InEnemy->GetEndurance(),
+			InEnemy->WeaponDamage,
+			TurnNumber
+		};
+
+		// Обязательно! Сначала применяются все бонусы атакующего, затем особенности защищающегося.
+		InPlayer->BonusSystem->ApplyBonuses(FightInfo);
+		FightInfo.AttackerTotalDamage = FightInfo.AttackerStrength + FightInfo.AttackerWeaponDamage + FightInfo.Damage;
+		// InEnemy->BonusSystem->ApplyBonuses(FightInfo);
+		
+		
+		return FightInfo.AttackerTotalDamage;
+	}
+	
+
+	return 0;
 }

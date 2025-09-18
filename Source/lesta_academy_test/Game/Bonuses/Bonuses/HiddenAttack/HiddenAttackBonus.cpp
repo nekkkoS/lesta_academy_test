@@ -1,9 +1,12 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HiddenAttackBonus.h"
 
-void UHiddenAttackBonus::Apply()
+#include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
+
+void UHiddenAttackBonus::Apply(FFightInfo& FightInfo)
 {
-	UE_LOG(LogTemp, Error, TEXT("Hidden Attack applied."));
+	if (FightInfo.AttackerAgility > FightInfo.DefenderAgility)
+		FightInfo.Damage += 1;
 }

@@ -3,7 +3,9 @@
 
 #include "StrengthPlusOne.h"
 
-void UStrengthPlusOne::Apply()
+#include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
+
+void UStrengthPlusOne::Apply(FFightInfo& FightInfo)
 {
-	UE_LOG(LogTemp, Error, TEXT("StrengthPlusOne applied."));
+	FightInfo.AttackerStrength += 1;
 }

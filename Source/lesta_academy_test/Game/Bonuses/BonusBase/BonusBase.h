@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "BonusBase.generated.h"
 
+struct FFightInfo;
 /**
  * 
  */
@@ -16,6 +17,5 @@ class LESTA_ACADEMY_TEST_API UBonusBase : public UObject
 
 public:
 	
-	virtual void Apply() PURE_VIRTUAL(UBonusBase::Apply);
-	
+	virtual void Apply(FFightInfo& FightInfo) PURE_VIRTUAL(UBonusBase::Apply);
 };

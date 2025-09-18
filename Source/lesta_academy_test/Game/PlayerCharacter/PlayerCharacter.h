@@ -56,15 +56,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
-	// ------ Дамаг ------
-
-public:
-
-	void AttackPerform() {}
-
-	void GetDamage() {}
-
 	
 	// ------ Здоровье ------
 
@@ -136,7 +127,7 @@ public:
 
 	void UpdateBonuses();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Bonuses")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Bonuses")
 	UBonusSystemComponent* BonusSystem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Bonuses")
@@ -144,7 +135,7 @@ public:
 
 private:
 
-	static TArray<FClassBonusInfo> BonusTable;
+	// static TArray<FClassBonusInfo> BonusTable;
 	
 	// ------ ___ ------
 

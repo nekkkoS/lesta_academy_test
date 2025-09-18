@@ -15,19 +15,19 @@ APlayerCharacter::APlayerCharacter()
 
 	BonusSystem = CreateDefaultSubobject<UBonusSystemComponent>(TEXT("BonusSystem"));
 
-	BonusTable = {
-		{ECharacterClass::Rogue, 1, {UHiddenAttackBonus::StaticClass()}},
-		/*{ECharacterClass::Rogue, 2, {UDexterityPlusOne::StaticClass()}},
-		{ECharacterClass::Rogue, 3, {UPoisonBonus::StaticClass()}},
-
-		{ECharacterClass::Warrior, 1, {UActionSurgeBonus::StaticClass()}},
-		{ECharacterClass::Warrior, 2, {UShieldBonus::StaticClass()}},
-		{ECharacterClass::Warrior, 3, {UStrengthPlusOne::StaticClass()}},
-
-		{ECharacterClass::Barbarian, 1, {URageBonus::StaticClass()}},
-		{ECharacterClass::Barbarian, 2, {UStoneSkinBonus::StaticClass()}},
-		{ECharacterClass::Barbarian, 3, {UStaminaPlusOne::StaticClass()}}*/
-	};
+	// BonusTable = {
+	// 	{ECharacterClass::Rogue, 1, {UHiddenAttackBonus::StaticClass()}},
+	// 	{ECharacterClass::Rogue, 2, {UDexterityPlusOne::StaticClass()}},
+	// 	{ECharacterClass::Rogue, 3, {UPoisonBonus::StaticClass()}},
+	//
+	// 	{ECharacterClass::Warrior, 1, {UActionSurgeBonus::StaticClass()}},
+	// 	{ECharacterClass::Warrior, 2, {UShieldBonus::StaticClass()}},
+	// 	{ECharacterClass::Warrior, 3, {UStrengthPlusOne::StaticClass()}},
+	//
+	// 	{ECharacterClass::Barbarian, 1, {URageBonus::StaticClass()}},
+	// 	{ECharacterClass::Barbarian, 2, {UStoneSkinBonus::StaticClass()}},
+	// 	{ECharacterClass::Barbarian, 3, {UStaminaPlusOne::StaticClass()}}
+	// };
 }
 
 // Called when the game starts or when spawned
@@ -39,8 +39,6 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::UpdateBonuses()
 {
-	// if (ClassLevels.Rogue == 1)
-	// 	BonusSystem->AddBonus(UHiddenAttackBonus::StaticClass());
 	
 }
 

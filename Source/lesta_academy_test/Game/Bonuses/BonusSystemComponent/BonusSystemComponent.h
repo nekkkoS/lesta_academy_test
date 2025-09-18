@@ -7,6 +7,7 @@
 #include "BonusSystemComponent.generated.h"
 
 
+struct FFightInfo;
 class AEnemyCharacter;
 class APlayerCharacter;
 class UBonusBase;
@@ -25,12 +26,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-
-	UFUNCTION(BlueprintCallable, Category="Bonuses")
+	
 	void AddBonus(const TSubclassOf<UBonusBase> BonusClass);
-
-	UFUNCTION(BlueprintCallable, Category="Bonuses")
-	void ApplyBonuses(APlayerCharacter* Player, AEnemyCharacter* Enemy, bool IsPlayerTurn) const;
+	
+	void ApplyBonuses(FFightInfo& FightInfo) const;
 
 protected:
 	
