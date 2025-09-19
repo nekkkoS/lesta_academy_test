@@ -41,6 +41,13 @@ void UBonusSystemComponent::AddBonus(const TSubclassOf<UBonusBase> BonusClass)
 	}
 	
 	ActiveBonuses.Add(Bonus);
+	UE_LOG(LogTemp, Warning, TEXT("Bonus of class: %s added for %s."),
+		*BonusClass->GetName(), *GetOwner()->GetName());
+}
+
+void UBonusSystemComponent::RemoveAllBonuses()
+{
+	ActiveBonuses.Empty();
 }
 
 void UBonusSystemComponent::ApplyBonuses(FFightInfo& FightInfo) const

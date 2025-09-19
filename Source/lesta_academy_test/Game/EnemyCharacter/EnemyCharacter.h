@@ -9,6 +9,17 @@
 class UBonusSystemComponent;
 class UWeapon;
 
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	Goblin,
+	Skeleton,
+	Slime,
+	Ghost,
+	Golem,
+	Dragon
+};
+
 UCLASS()
 class LESTA_ACADEMY_TEST_API AEnemyCharacter : public AActor
 {
@@ -76,15 +87,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
 	int32 Endurance = 0;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Name")
-	FText UnitName;
-
 	
-	// ------ Бонусы ------
+	// ------ Особенности ------
 
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Bonuses")
-	UBonusSystemComponent* BonusSystem;*/
+protected:
 
+	void AddFeature() const;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Feature")
+	EEnemyType EnemyType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Feature")
+	UBonusSystemComponent* FeatureSystem;
 
 	// ------ ___ ------
 

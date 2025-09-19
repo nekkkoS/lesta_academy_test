@@ -43,6 +43,24 @@ struct FClassLevels
 	int32 Barbarian = 0;
 };
 
+USTRUCT(BlueprintType)
+struct FClassBonusRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	// Класс персонажа (Разбойник / Воин / Варвар)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ECharacterClass Class;
+
+	// Уровень, на котором даётся бонус
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Level;
+
+	// Бонусы
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<UBonusBase>> Bonuses;
+};
+
 UCLASS()
 class LESTA_ACADEMY_TEST_API APlayerCharacter : public AActor
 {
@@ -117,25 +135,27 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
 	int32 Endurance = 0;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Name")
-	FText UnitName;
-
 	
 	// ------ Бонусы ------
 
 public:
 
-	void UpdateBonuses();
+	void AddBonuses() const;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Bonuses")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Bonuses")
 	UBonusSystemComponent* BonusSystem;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Bonuses")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Bonuses")
 	FClassLevels ClassLevels;
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonuses")
+	UDataTable* BonusDataTable;
 
 private:
 
-	// static TArray<FClassBonusInfo> BonusTable;
+	void AddBonusesForClass(ECharacterClass Class, int32 Level, const TArray<FClassBonusRow*>& AllRows) const;
 	
 	// ------ ___ ------
 

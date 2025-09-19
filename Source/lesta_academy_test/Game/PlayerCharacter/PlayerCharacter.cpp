@@ -3,7 +3,6 @@
 
 #include "PlayerCharacter.h"
 
-#include "lesta_academy_test/Game/Bonuses/Bonuses/HiddenAttack/HiddenAttackBonus.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
 
 
@@ -14,20 +13,6 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	BonusSystem = CreateDefaultSubobject<UBonusSystemComponent>(TEXT("BonusSystem"));
-
-	// BonusTable = {
-	// 	{ECharacterClass::Rogue, 1, {UHiddenAttackBonus::StaticClass()}},
-	// 	{ECharacterClass::Rogue, 2, {UDexterityPlusOne::StaticClass()}},
-	// 	{ECharacterClass::Rogue, 3, {UPoisonBonus::StaticClass()}},
-	//
-	// 	{ECharacterClass::Warrior, 1, {UActionSurgeBonus::StaticClass()}},
-	// 	{ECharacterClass::Warrior, 2, {UShieldBonus::StaticClass()}},
-	// 	{ECharacterClass::Warrior, 3, {UStrengthPlusOne::StaticClass()}},
-	//
-	// 	{ECharacterClass::Barbarian, 1, {URageBonus::StaticClass()}},
-	// 	{ECharacterClass::Barbarian, 2, {UStoneSkinBonus::StaticClass()}},
-	// 	{ECharacterClass::Barbarian, 3, {UStaminaPlusOne::StaticClass()}}
-	// };
 }
 
 // Called when the game starts or when spawned
@@ -37,9 +22,40 @@ void APlayerCharacter::BeginPlay()
 	
 }
 
-void APlayerCharacter::UpdateBonuses()
+void APlayerCharacter::AddBonuses() const
 {
+	if (!BonusDataTable || !BonusSystem)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BonusDataTable or BonusSystem is null"));
+		return;
+	}
+
+	BonusSystem->RemoveAllBonuses();
+
+	TArray<FClassBonusRow*> AllRows;
+	BonusDataTable->GetAllRows(TEXT("Bonus Lookup"), AllRows);
 	
+	AddBonusesForClass(ECharacterClass::Rogue, ClassLevels.Rogue, AllRows);
+	AddBonusesForClass(ECharacterClass::Warrior, ClassLevels.Warrior, AllRows);
+	AddBonusesForClass(ECharacterClass::Barbarian, ClassLevels.Barbarian, AllRows);
+}
+
+void APlayerCharacter::AddBonusesForClass(ECharacterClass Class, int32 Level,
+	const TArray<FClassBonusRow*>& AllRows) const
+{
+	for (int32 L = 1; L <= Level; ++L)
+	{
+		for (auto* Row : AllRows)
+		{
+			if (Row->Class == Class && Row->Level == L)
+			{
+				for (auto& BonusClass : Row->Bonuses)
+				{
+					BonusSystem->AddBonus(BonusClass);
+				}
+			}
+		}
+	}
 }
 
 void APlayerCharacter::InitializeRandomAttributes()

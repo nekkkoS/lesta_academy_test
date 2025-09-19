@@ -86,15 +86,13 @@ void AMyGameMode::OnPlayerLostFight()
 void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
 {
 	if (CharacterClass == "Rogue")
-	{
 		Player->ClassLevels.Rogue++;
-		Player->BonusSystem->AddBonus(UHiddenAttackBonus::StaticClass());
-	}
 	else if (CharacterClass == "Warrior")
 		Player->ClassLevels.Warrior++;
 	else if (CharacterClass == "Barbarian")
 		Player->ClassLevels.Barbarian++;
-	
+
+	Player->AddBonuses();
 	SimulateFights();
 }
 
