@@ -6,6 +6,9 @@
 #include "GameFramework/GameMode.h"
 #include "MyGameMode.generated.h"
 
+class UWeapon;
+class UEndOfGameWidget;
+class UPlayerWonFightWidget;
 class UPlayerLostFightWidget;
 enum class EWeaponDamageType : uint8;
 class AEnemyCharacter;
@@ -106,5 +109,19 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<UPlayerLostFightWidget> PlayerLostFightWidgetClass;
-	
+
+	void OnPlayerWonFight();
+
+	void ShowPlayerWonFightWidget() const;
+
+	UPROPERTY()
+	TSubclassOf<UPlayerWonFightWidget> PlayerWonFightWidgetClass;
+
+	void ShowEndOfGameWidget() const;
+
+	UPROPERTY()
+	TSubclassOf<UEndOfGameWidget> EndOfGameWidgetClass;
+
+	UFUNCTION()
+	void OnPlayerChangeWeapon();
 };

@@ -3,11 +3,11 @@
 
 #include "EnemyCharacter.h"
 
-#include "lesta_academy_test/Game/Bonuses/Bonuses/DragonFeature/DragonFeature.h"
-#include "lesta_academy_test/Game/Bonuses/Bonuses/HiddenAttack/HiddenAttackBonus.h"
-#include "lesta_academy_test/Game/Bonuses/Bonuses/SkeletonFeature/SkeletonFeatureBonus.h"
-#include "lesta_academy_test/Game/Bonuses/Bonuses/SlimeFeature/SlimeFeature.h"
-#include "lesta_academy_test/Game/Bonuses/Bonuses/StoneSkin/StoneSkin.h"
+#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/DragonFeature/DragonFeature.h"
+#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/HiddenAttack/HiddenAttack.h"
+#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/SkeletonFeature/SkeletonFeature.h"
+#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/SlimeFeature/SlimeFeature.h"
+#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/StoneSkin/StoneSkin.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
 
 
@@ -24,43 +24,18 @@ AEnemyCharacter::AEnemyCharacter()
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 	AddFeature();
 }
 
 void AEnemyCharacter::AddFeature() const
 {
-	if (!FeatureSystem)
-		return;
-	
-	switch (EnemyType)
+	if (!FeatureSystem || !FeatureClass)
 	{
-	case EEnemyType::Goblin:
-		break;
-		
-	case EEnemyType::Skeleton:
-		FeatureSystem->AddBonus(USkeletonFeatureBonus::StaticClass());
-		break;
-		
-	case EEnemyType::Slime:
-		FeatureSystem->AddBonus(USlimeFeature::StaticClass());
-		break;
-		
-	case EEnemyType::Ghost:
-		FeatureSystem->AddBonus(UHiddenAttackBonus::StaticClass());
-		break;
-		
-	case EEnemyType::Golem:
-		FeatureSystem->AddBonus(UStoneSkin::StaticClass());
-		break;
-
-	case EEnemyType::Dragon:
-		FeatureSystem->AddBonus(UDragonFeature::StaticClass());
-		break;
-		
-	default:
-		break;
+		UE_LOG(LogTemp, Error, TEXT("FeatureSystem or FeatureClass is not set."));
+		return;
 	}
+	
+	FeatureSystem->AddBonus(FeatureClass);
 }
 
 void AEnemyCharacter::InitializeRandomAttributes()

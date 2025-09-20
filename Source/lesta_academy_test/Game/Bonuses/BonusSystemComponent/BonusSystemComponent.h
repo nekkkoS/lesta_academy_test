@@ -27,7 +27,7 @@ protected:
 
 public:
 	
-	void AddBonus(const TSubclassOf<UBonusBase> BonusClass);
+	void AddBonus(const TSubclassOf<UBonusBase>& BonusClass);
 
 	void RemoveAllBonuses();
 	

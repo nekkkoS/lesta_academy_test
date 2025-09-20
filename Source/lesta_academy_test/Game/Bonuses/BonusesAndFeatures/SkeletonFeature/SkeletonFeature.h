@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "lesta_academy_test/Game/Bonuses/BonusBase/BonusBase.h"
-#include "PoisonBonus.generated.h"
+#include "SkeletonFeature.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LESTA_ACADEMY_TEST_API UPoisonBonus : public UBonusBase
+class LESTA_ACADEMY_TEST_API USkeletonFeature : public UBonusBase
 {
 	GENERATED_BODY()
 

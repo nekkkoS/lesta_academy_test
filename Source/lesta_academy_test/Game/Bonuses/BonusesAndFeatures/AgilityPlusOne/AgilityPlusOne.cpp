@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AgilityPlusOneBonus.h"
+#include "AgilityPlusOne.h"
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 
-void UAgilityPlusOneBonus::Apply(FFightInfo& FightInfo)
+void UAgilityPlusOne::Apply(FFightInfo& FightInfo)
 {
 	FightInfo.AttackerAgility += 1;
 }

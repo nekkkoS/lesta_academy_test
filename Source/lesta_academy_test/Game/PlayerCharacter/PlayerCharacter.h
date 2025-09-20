@@ -79,22 +79,25 @@ protected:
 
 public:
 
-	void InitializeRandomAttributes();
-
+	void Init();
 	
 	// ------ Здоровье ------
 
 public:
 	
-	void SetHP(const int32 NewHP) {HP = FMath::Max(0, NewHP);}
+	void SetHP(const int32 NewHP) {HP = FMath::Clamp(NewHP, 0, MaxHP);}
 
-	void ModifyHP(const int32 Delta) {HP = FMath::Max(0, HP + Delta);}
+	void ModifyHP(const int32 Delta) {SetHP(HP + Delta);}
 
 	int32 GetHP() const {return HP;}
 
-	void SetMaxHP(const int32 NewMaxHP) {MaxHP = FMath::Max(0, NewMaxHP);}
+	void SetMaxHP(const int32 NewMaxHP)
+	{
+		MaxHP = FMath::Max(1, NewMaxHP);
+		SetHP(HP);
+	}
 
-	void ModifyMaxHP(const int32 Delta) {HP = FMath::Max(0, MaxHP + Delta);}
+	void ModifyMaxHP(const int32 Delta) {SetMaxHP(MaxHP + Delta);}
 
 	int32 GetMaxHP() const {return MaxHP;}
 
@@ -106,7 +109,7 @@ protected:
 	int32 HP = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
-	int32 MaxHP = 0;
+	int32 MaxHP = 1;
 
 	
 	// ------ Базовые статы ------
@@ -158,9 +161,8 @@ public:
 
 	void IncreaseLevel();
 
-protected:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
+private:
+	
 	int32 PlayerCharacterLevel = 0;
 
 public:

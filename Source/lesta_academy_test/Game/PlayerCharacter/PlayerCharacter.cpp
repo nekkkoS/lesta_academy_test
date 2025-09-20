@@ -63,7 +63,7 @@ void APlayerCharacter::AddBonusesForClass(ECharacterClass Class, int32 Level,
 	}
 }
 
-void APlayerCharacter::InitializeRandomAttributes()
+void APlayerCharacter::Init()
 {
 	Strength = FMath::RandRange(1, 3);
 	Agility = FMath::RandRange(1, 3);

@@ -4,7 +4,7 @@
 #include "BonusSystemComponent.h"
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
-#include "lesta_academy_test/Game/Bonuses/Bonuses/HiddenAttack/HiddenAttackBonus.h"
+#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/HiddenAttack/HiddenAttack.h"
 
 
 // Sets default values for this component's properties
@@ -25,7 +25,7 @@ void UBonusSystemComponent::BeginPlay()
 	
 }
 
-void UBonusSystemComponent::AddBonus(const TSubclassOf<UBonusBase> BonusClass)
+void UBonusSystemComponent::AddBonus(const TSubclassOf<UBonusBase>& BonusClass)
 {
 	if (!BonusClass)
 	{

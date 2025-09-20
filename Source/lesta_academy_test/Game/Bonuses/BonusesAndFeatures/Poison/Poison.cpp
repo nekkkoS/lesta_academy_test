@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PoisonBonus.h"
+#include "Poison.h"
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 
-void UPoisonBonus::Apply(FFightInfo& FightInfo)
+void UPoison::Apply(FFightInfo& FightInfo)
 {
 	// TODO: Придумать где хранить TurnNumber
 	/*if (FightInfo.TurnNumber < 2)
