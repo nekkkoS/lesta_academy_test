@@ -45,7 +45,7 @@ void APlayerCharacter::AddBonuses() const
 	AddBonusesForClass(ECharacterClass::Barbarian, ClassLevels.Barbarian, AllRows);
 }
 
-void APlayerCharacter::AddBonusesForClass(ECharacterClass Class, int32 Level,
+void APlayerCharacter::AddBonusesForClass(const ECharacterClass Class, const int32 Level,
 	const TArray<FClassBonusRow*>& AllRows) const
 {
 	for (int32 L = 1; L <= Level; ++L)
@@ -63,7 +63,7 @@ void APlayerCharacter::AddBonusesForClass(ECharacterClass Class, int32 Level,
 	}
 }
 
-void APlayerCharacter::Init()
+void APlayerCharacter::InitializeRandomAttributes()
 {
 	Strength = FMath::RandRange(1, 3);
 	Agility = FMath::RandRange(1, 3);

@@ -17,7 +17,7 @@ class LESTA_ACADEMY_TEST_API USelectCharacterClassWidget : public UUserWidget
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClassSelected, const FString&, CharacterClass);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClassSelected, ECharacterClass, CharacterClass);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnClassSelected OnClassSelected;
@@ -31,20 +31,20 @@ protected:
 private:
 
 	UPROPERTY(meta = (BindWidget))
+	UButton* RogueBtn;
+
+	UPROPERTY(meta = (BindWidget))
 	UButton* WarriorBtn;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* BarbarianBtn;
 
-	UPROPERTY(meta = (BindWidget))
-	UButton* RogueBtn;
+	UFUNCTION()
+	void OnRogueBtnClicked();
 
 	UFUNCTION()
 	void OnWarriorBtnClicked();
 
 	UFUNCTION()
 	void OnBarbarianBtnClicked();
-
-	UFUNCTION()
-	void OnRogueBtnClicked();
 };

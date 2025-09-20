@@ -45,11 +45,7 @@ public:
 
 	int32 GetHP() const {return HP;}
 
-	void SetMaxHP(const int32 NewMaxHP)
-	{
-		MaxHP = FMath::Max(1, NewMaxHP);
-		SetHP(HP);
-	}
+	void SetMaxHP(const int32 NewMaxHP) {MaxHP = FMath::Max(1, NewMaxHP);}
 
 	void ModifyMaxHP(const int32 Delta) {SetMaxHP(MaxHP + Delta);}
 
@@ -67,7 +63,6 @@ protected:
 
 	
 	// ------ Базовые статы ------
-	// TODO: Ненужные сеттеры/геттеры можно будет убрать
 	
 public:
 

@@ -66,9 +66,8 @@ void AMyGameMode::StartNewGame()
 		return;
 	}
 	
-	if (!SpawnPlayerCharacter())
+	if (!CreatePlayerCharacter())
 		return;
-	Player->Init();
 	
 	if (!SpawnRandomEnemy())
 		return;
@@ -77,11 +76,11 @@ void AMyGameMode::StartNewGame()
 	ShowSelectCharacterClassWidget();
 }
 
-bool AMyGameMode::SpawnPlayerCharacter()
+bool AMyGameMode::CreatePlayerCharacter()
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	FVector PlayerLocation = FVector(100.0f, 0.0f, 100.0f);
+	const FVector PlayerLocation = FVector(100.0f, 0.0f, 100.0f);
 	Player = GetWorld()->SpawnActor<APlayerCharacter>(PlayerBlueprintClass, PlayerLocation,
 		FRotator::ZeroRotator, SpawnParams);
 	
@@ -90,6 +89,9 @@ bool AMyGameMode::SpawnPlayerCharacter()
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn player from blueprint"));
 		return false;
 	}
+
+	Player->InitializeRandomAttributes();
+	ShowSelectCharacterClassWidget();
 
 	return true;
 }
@@ -104,9 +106,9 @@ bool AMyGameMode::SpawnRandomEnemy()
 	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	int32 Index = FMath::RandRange(0, EnemyClassesSample.Num() - 1);
-	TSubclassOf<AEnemyCharacter> EnemyClass = EnemyClassesSample[Index];
-	FVector EnemyLocation = FVector(500.0f, 0.0f, 100.0f);
+	const int32 Index = FMath::RandRange(0, EnemyClassesSample.Num() - 1);
+	const TSubclassOf<AEnemyCharacter> EnemyClass = EnemyClassesSample[Index];
+	const FVector EnemyLocation = FVector(500.0f, 0.0f, 100.0f);
 	Enemy = GetWorld()->SpawnActor<AEnemyCharacter>(
 		EnemyClass,
 		EnemyLocation,
@@ -140,8 +142,7 @@ void AMyGameMode::ShowSelectCharacterClassWidget() const
 	SelectCharacterWidget->AddToViewport();
 }
 
-// TODO: Заменить строку на enum
-void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
+void AMyGameMode::HandleClassSelected(ECharacterClass CharacterClass)
 {
 	if (!Player)
 	{
@@ -149,15 +150,15 @@ void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
 		return;
 	}
 	
-	if (CharacterClass == "Rogue")
+	if (CharacterClass == ECharacterClass::Rogue)
 		Player->ClassLevels.Rogue++;
-	else if (CharacterClass == "Warrior")
+	else if (CharacterClass == ECharacterClass::Warrior)
 		Player->ClassLevels.Warrior++;
-	else if (CharacterClass == "Barbarian")
+	else if (CharacterClass == ECharacterClass::Barbarian)
 		Player->ClassLevels.Barbarian++;
-
-	// Player->UpdateHP();
+	
 	Player->AddBonuses();
+	Player->IncreaseLevel();
 	
 	StartFight();
 }

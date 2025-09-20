@@ -4,6 +4,7 @@
 #include "SelectCharacterClassWidget.h"
 
 #include "Components/Button.h"
+#include "lesta_academy_test/Game/PlayerCharacter/PlayerCharacter.h"
 
 void USelectCharacterClassWidget::NativeConstruct()
 {
@@ -25,20 +26,20 @@ void USelectCharacterClassWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
+void USelectCharacterClassWidget::OnRogueBtnClicked()
+{
+	OnClassSelected.Broadcast(ECharacterClass::Rogue);
+	RemoveFromParent();
+}
+
 void USelectCharacterClassWidget::OnWarriorBtnClicked()
 {
-	OnClassSelected.Broadcast("Warrior");
+	OnClassSelected.Broadcast(ECharacterClass::Warrior);
 	RemoveFromParent();
 }
 
 void USelectCharacterClassWidget::OnBarbarianBtnClicked()
 {
-	OnClassSelected.Broadcast("Barbarian");
-	RemoveFromParent();
-}
-
-void USelectCharacterClassWidget::OnRogueBtnClicked()
-{
-	OnClassSelected.Broadcast("Rogue");
+	OnClassSelected.Broadcast(ECharacterClass::Barbarian);
 	RemoveFromParent();
 }

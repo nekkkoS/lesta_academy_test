@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "MyGameMode.generated.h"
 
+enum class ECharacterClass : uint8;
 class UWeapon;
 class UEndOfGameWidget;
 class UPlayerWonFightWidget;
@@ -56,14 +57,14 @@ private:
 
 	void StartNewGame();
 
-	bool SpawnPlayerCharacter();
+	bool CreatePlayerCharacter();
 
 	bool SpawnRandomEnemy();
 
 	void ShowSelectCharacterClassWidget() const;
 
 	UFUNCTION()
-	void HandleClassSelected(const FString& CharacterClass);
+	void HandleClassSelected(ECharacterClass CharacterClass);
 
 	UPROPERTY()
 	APlayerCharacter* Player;

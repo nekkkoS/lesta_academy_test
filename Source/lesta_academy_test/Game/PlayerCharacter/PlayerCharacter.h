@@ -79,7 +79,7 @@ protected:
 
 public:
 
-	void Init();
+	void InitializeRandomAttributes();
 	
 	// ------ Здоровье ------
 
@@ -91,11 +91,7 @@ public:
 
 	int32 GetHP() const {return HP;}
 
-	void SetMaxHP(const int32 NewMaxHP)
-	{
-		MaxHP = FMath::Max(1, NewMaxHP);
-		SetHP(HP);
-	}
+	void SetMaxHP(const int32 NewMaxHP) {MaxHP = FMath::Max(1, NewMaxHP);}
 
 	void ModifyMaxHP(const int32 Delta) {SetMaxHP(MaxHP + Delta);}
 
@@ -105,15 +101,14 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
+	UPROPERTY()
 	int32 HP = 0;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
-	int32 MaxHP = 1;
+	UPROPERTY()
+	int32 MaxHP = 0;
 
 	
 	// ------ Базовые статы ------
-	// TODO: Ненужные сеттеры/геттеры можно будет убрать
 
 public:
 
@@ -137,13 +132,13 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
+	UPROPERTY()
 	int32 Strength = 0;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
+	UPROPERTY()
 	int32 Agility = 0;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
+	UPROPERTY()
 	int32 Endurance = 0;
 
 
@@ -151,28 +146,33 @@ protected:
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
+	UPROPERTY()
 	UWeapon* Weapon;
 
 	
-	// ------ Level Up ------
+	// ------ Character Level ------
 
 public:
 
 	void IncreaseLevel();
 
+	int32 GetCurrentLevel() const {return PlayerCharacterLevel;}
+
 private:
 	
 	int32 PlayerCharacterLevel = 0;
+
+
+	// ------ Бонусы ------
 
 public:
 
 	void AddBonuses() const;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
+	UPROPERTY()
 	UBonusSystemComponent* BonusSystem;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
+	UPROPERTY()
 	FClassLevels ClassLevels;
 
 protected:
