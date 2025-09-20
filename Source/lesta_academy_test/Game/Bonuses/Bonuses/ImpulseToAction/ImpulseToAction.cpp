@@ -7,6 +7,7 @@
 
 void UImpulseToAction::Apply(FFightInfo& FightInfo)
 {
-	if (FightInfo.TurnNumber == 1)
-		FightInfo.AttackerWeaponDamage *= 2;
+	// TODO: Придумать где хранить TurnNumber
+	/*if (FightInfo.TurnNumber == 1)
+		FightInfo.AttackerWeaponDamage *= 2;*/
 }

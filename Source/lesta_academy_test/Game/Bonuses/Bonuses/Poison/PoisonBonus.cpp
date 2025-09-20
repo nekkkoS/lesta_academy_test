@@ -7,8 +7,9 @@
 
 void UPoisonBonus::Apply(FFightInfo& FightInfo)
 {
-	if (FightInfo.TurnNumber < 2)
+	// TODO: Придумать где хранить TurnNumber
+	/*if (FightInfo.TurnNumber < 2)
 		return;
 
-	FightInfo.Damage += FightInfo.TurnNumber - 1;
+	FightInfo.Damage += FightInfo.TurnNumber - 1;*/
 }

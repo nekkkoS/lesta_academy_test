@@ -6,11 +6,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "lesta_academy_test/Core/MyHUD/MyHUD.h"
 #include "lesta_academy_test/Core/MyPlayerController/MyPlayerController.h"
-#include "lesta_academy_test/Game/Bonuses/Bonuses/HiddenAttack/HiddenAttackBonus.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
 #include "lesta_academy_test/Game/EnemyCharacter/EnemyCharacter.h"
 #include "lesta_academy_test/Game/PlayerCharacter/PlayerCharacter.h"
 #include "lesta_academy_test/Game/UI/SelectCharacterClassWidget/SelectCharacterClassWidget.h"
+#include "lesta_academy_test/Game/UI/PlayerLostFightWidget/PlayerLostFightWidget.h"
 #include "lesta_academy_test/Game/Weapon/Weapon.h"
 
 AMyGameMode::AMyGameMode()
@@ -19,11 +19,17 @@ AMyGameMode::AMyGameMode()
 	PlayerControllerClass = AMyPlayerController::StaticClass();
 
 
-	static ConstructorHelpers::FClassFinder<USelectCharacterClassWidget> WBP_SelectCharacterClass(
+	static ConstructorHelpers::FClassFinder<USelectCharacterClassWidget> WBP_SelectCharacter(
 		TEXT("/Game/UI/WBP_SelectCharacterClass")
 	);
-	if (WBP_SelectCharacterClass.Succeeded())
-		SelectCharacterWidgetClass = WBP_SelectCharacterClass.Class;
+	if (WBP_SelectCharacter.Succeeded())
+		SelectCharacterWidgetClass = WBP_SelectCharacter.Class;
+
+	static ConstructorHelpers::FClassFinder<UPlayerLostFightWidget> WBP_PlayerLostFight(
+		TEXT("/Game/UI/WBP_PlayerLostFight")
+	);
+	if (WBP_PlayerLostFight.Succeeded())
+		PlayerLostFightWidgetClass = WBP_PlayerLostFight.Class;
 }
 
 void AMyGameMode::BeginPlay()
@@ -35,8 +41,7 @@ void AMyGameMode::BeginPlay()
 	PC->bShowMouseCursor = true;
 	// TODO: Вернуть
 	// PC->SetInputMode(FInputModeUIOnly());
-
-	ShowSelectCharacterClassWidget();
+	
 	StartNewGame();
 }
 
@@ -47,62 +52,47 @@ void AMyGameMode::StartNewGame()
 		UE_LOG(LogTemp, Error, TEXT("PlayerBlueprintClass is not set."));
 		return;
 	}
+	
+	if (!SpawnPlayerCharacter())
+		return;
+	Player->InitializeRandomAttributes();
+	
+	if (!SpawnRandomEnemy())
+		return;
+	Enemy->InitializeRandomAttributes();
 
-	// Герой
+	ShowSelectCharacterClassWidget();
+}
+
+bool AMyGameMode::SpawnPlayerCharacter()
+{
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	FVector PlayerLocation = FVector(100.0f, 0.0f, 100.0f);
 	Player = GetWorld()->SpawnActor<APlayerCharacter>(PlayerBlueprintClass, PlayerLocation,
 		FRotator::ZeroRotator, SpawnParams);
+	
 	if (!Player)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn player from blueprint"));
-		return;
+		return false;
+	}
+
+	return true;
+}
+
+bool AMyGameMode::SpawnRandomEnemy()
+{
+	if (EnemyClassesSample.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error, TEXT("EnemyClassesSample is empty."));
+		return false;
 	}
 	
-	Player->InitializeRandomAttributes();
-
-	
-	// Враг (рандомный)
-	SpawnRandomEnemy(SpawnParams);
-
-
-	// SimulateFights();
-}
-
-void AMyGameMode::StartNextFight()
-{
-}
-
-void AMyGameMode::OnPlayerWonFight()
-{
-}
-
-void AMyGameMode::OnPlayerLostFight()
-{
-}
-
-// TODO: Заменить строку на enum
-void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
-{
-	if (CharacterClass == "Rogue")
-		Player->ClassLevels.Rogue++;
-	else if (CharacterClass == "Warrior")
-		Player->ClassLevels.Warrior++;
-	else if (CharacterClass == "Barbarian")
-		Player->ClassLevels.Barbarian++;
-
-	Player->AddBonuses();
-	SimulateFights();
-}
-
-void AMyGameMode::SpawnRandomEnemy(const FActorSpawnParameters& SpawnParams)
-{
-	// TODO: чекнуть есть ли проверка на пустой массив
-	// выбираем случайный класс врага
-	int32 Index = FMath::RandRange(0, EnemyBlueprintClasses.Num() - 1);
-	TSubclassOf<AEnemyCharacter> EnemyClass = EnemyBlueprintClasses[Index];
-
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	int32 Index = FMath::RandRange(0, EnemyClassesSample.Num() - 1);
+	TSubclassOf<AEnemyCharacter> EnemyClass = EnemyClassesSample[Index];
 	FVector EnemyLocation = FVector(500.0f, 0.0f, 100.0f);
 	Enemy = GetWorld()->SpawnActor<AEnemyCharacter>(
 		EnemyClass,
@@ -114,12 +104,11 @@ void AMyGameMode::SpawnRandomEnemy(const FActorSpawnParameters& SpawnParams)
 	if (!Enemy)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn enemy from blueprint"));
-		return;
+		return false;
 	}
 
-	Enemy->InitializeRandomAttributes();
-
 	UE_LOG(LogTemp, Warning, TEXT("Spawned enemy of class: %s"), *Enemy->GetClass()->GetName());
+	return true;
 }
 
 void AMyGameMode::ShowSelectCharacterClassWidget() const
@@ -130,7 +119,7 @@ void AMyGameMode::ShowSelectCharacterClassWidget() const
 
 	if (!SelectCharacterWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Create SelectCharacterWidget failed"));
+		UE_LOG(LogTemp, Error, TEXT("Fail to create SelectCharacterWidget"));
 		return;
 	}
 
@@ -138,7 +127,30 @@ void AMyGameMode::ShowSelectCharacterClassWidget() const
 	SelectCharacterWidget->AddToViewport();
 }
 
-void AMyGameMode::SimulateFights()
+// TODO: Заменить строку на enum
+void AMyGameMode::HandleClassSelected(const FString& CharacterClass)
+{
+	if (!Player)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Player is not initialized."));
+		return;
+	}
+	
+	if (CharacterClass == "Rogue")
+		Player->ClassLevels.Rogue++;
+	else if (CharacterClass == "Warrior")
+		Player->ClassLevels.Warrior++;
+	else if (CharacterClass == "Barbarian")
+		Player->ClassLevels.Barbarian++;
+
+	// Player->UpdateHP();
+	Player->AddBonuses();
+
+	// TODO: Бой поломан
+	// StartFight();
+}
+
+void AMyGameMode::StartFight()
 {
 	if (!Player || !Enemy)
 	{
@@ -148,74 +160,92 @@ void AMyGameMode::SimulateFights()
 
 	UE_LOG(LogTemp, Warning, TEXT("=== Fight Started ==="));
 	UE_LOG(LogTemp, Warning, TEXT("Player HP: %d | Enemy HP: %d"), Player->GetHP(), Enemy->GetHP());
-
-	int32 TurnNumber = 1;
-	bool bPlayerTurn = Player->GetAgility() >= Enemy->GetAgility();
-	while (Player->GetHP() > 0 && Enemy->GetHP() > 0)
-	{
-		if (bPlayerTurn)  // Ходит игрок, Enemy цель
-		{
-			if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
-			}
-			else
-			{
-				const int32 Damage = CalculateFight(Player, Enemy, TurnNumber, true);
-				Enemy->ModifyHP(-Damage);
-				UE_LOG(LogTemp, Warning, TEXT("Player hits Enemy for %d damage! Enemy HP: %d"), Damage,
-					Enemy->GetHP());
-			}
-		}
-		else  // Ходит Enemy, игрок цель
-		{
-			if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Player->GetAgility())
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
-			}
-			else
-			{
-				int32 Damage = Enemy->GetStrength() + Enemy->WeaponDamage;
-				Player->ModifyHP(-Damage);
-			}
-		}
-		UE_LOG(LogTemp, Warning, TEXT("Player HP: %d | Enemy HP: %d"), Player->GetHP(), Enemy->GetHP());
-
-		TurnNumber++;
-		bPlayerTurn = !bPlayerTurn;
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Player weapon: %s | Enemy weapon: %s"),
+		*Player->Weapon->WeaponName.ToString(), *Enemy->RewardWeapon->WeaponName.ToString());
 	
-	if (Player->GetHP() > 0)
+	bPlayerTurn = Player->GetAgility() >= Enemy->GetAgility();
+	
+	GetWorldTimerManager().SetTimer(FightTurnTimer, this, &AMyGameMode::DoTurn, 1.0f, false);
+}
+
+void AMyGameMode::DoTurn()
+{
+	if (Player->GetHP() <= 0 || Enemy->GetHP() <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("=== Player Won the Fight! ==="));
-		OnPlayerWonFight();
+		if (Player->GetHP() > 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("=== Player Won the Fight! ==="));
+			// OnPlayerWonFight();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("=== Enemy Won the Fight! ==="));
+			// ShowPlayerLostFightWidget();
+		}
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("=== Next turn ==="));
+
+	if (bPlayerTurn)
+	{
+		if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
+		}
+		else
+		{
+			/*const int32 Damage = CalculateFight(Player, Enemy, true);
+			UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy on %i damage"), Damage);
+			UE_LOG(LogTemp, Warning, TEXT("Current Enemy HP: %i"), Enemy->GetHP());*/
+			
+			Enemy->ModifyHP(-2);
+			UE_LOG(LogTemp, Warning, TEXT("After Damage Enemy HP: %i"), Enemy->GetHP());
+		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("=== Enemy Won the Fight! ==="));
-		OnPlayerLostFight();
+		if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Player->GetAgility())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
+		}
+		else
+		{
+			/*const int32 Damage = CalculateFight(Player, Enemy, false);
+			UE_LOG(LogTemp, Warning, TEXT("Enemy attack Player on %i damage"), Damage);
+			UE_LOG(LogTemp, Warning, TEXT("Current Player HP: %i"), Enemy->GetHP());*/
+			
+			Enemy->ModifyHP(-2);
+			UE_LOG(LogTemp, Warning, TEXT("After Damage Player HP: %i"), Enemy->GetHP());
+		}
 	}
+	
+	bPlayerTurn = !bPlayerTurn;
+	
+	GetWorldTimerManager().SetTimer(FightTurnTimer, this, &AMyGameMode::DoTurn, 0.1f, false);
 }
 
 int32 AMyGameMode::CalculateFight(const APlayerCharacter* InPlayer, const AEnemyCharacter* InEnemy,
-	const int32 TurnNumber, const bool IsPlayerTurn)
+	const bool IsPlayerTurn)
 {
 	if (IsPlayerTurn)
 	{
 		FFightInfo FightInfo = {
-			0, InPlayer->GetStrength(),
+			0,
+			InPlayer->GetStrength(),
 			InPlayer->GetAgility(),
 			InPlayer->GetEndurance(),
 			InPlayer->Weapon->BaseDamage,
 			InPlayer->Weapon->DamageType,
+			
 			InEnemy->GetStrength(),
 			InEnemy->GetAgility(),
 			InEnemy->GetEndurance(),
 			InEnemy->WeaponDamage,
-			TurnNumber
+			0
 		};
 
-		// Обязательно! Сначала применяются все бонусы атакующего, затем особенности защищающегося.
+		// Обязательно! Сначала применяются все бонусы атакующего, затем защищающегося.
 		InPlayer->BonusSystem->ApplyBonuses(FightInfo);
 		FightInfo.AttackerTotalDamage = FightInfo.AttackerStrength + FightInfo.AttackerWeaponDamage + FightInfo.Damage;
 		// InEnemy->BonusSystem->ApplyBonuses(FightInfo);
@@ -226,4 +256,19 @@ int32 AMyGameMode::CalculateFight(const APlayerCharacter* InPlayer, const AEnemy
 	
 
 	return 0;
+}
+
+void AMyGameMode::ShowPlayerLostFightWidget() const
+{
+	UPlayerLostFightWidget* PlayerLostFightWidget = CreateWidget<UPlayerLostFightWidget>(
+		GetWorld(), PlayerLostFightWidgetClass
+	);
+
+	if (!PlayerLostFightWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Fail to create SelectCharacterWidget"));
+		return;
+	}
+	
+	PlayerLostFightWidget->AddToViewport();
 }

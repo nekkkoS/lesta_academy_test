@@ -22,6 +22,11 @@ void APlayerCharacter::BeginPlay()
 	
 }
 
+void APlayerCharacter::IncreaseLevel()
+{
+	PlayerCharacterLevel++;
+}
+
 void APlayerCharacter::AddBonuses() const
 {
 	if (!BonusDataTable || !BonusSystem)

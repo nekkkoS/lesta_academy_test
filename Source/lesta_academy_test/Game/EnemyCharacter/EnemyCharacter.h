@@ -46,7 +46,7 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 HP = 0;
 
 	
@@ -73,18 +73,18 @@ public:
 
 	int32 GetEndurance() const {return Endurance;}
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 WeaponDamage = 0;
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 Strength = 0;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 Agility = 0;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 Endurance = 0;
 
 	
@@ -94,17 +94,17 @@ protected:
 
 	void AddFeature() const;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Feature")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	EEnemyType EnemyType;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Feature")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	UBonusSystemComponent* FeatureSystem;
 
 	// ------ ___ ------
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	UWeapon* RewardWeapon;
 
 	void InitializeRandomAttributes();

@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "MyGameMode.generated.h"
 
+class UPlayerLostFightWidget;
 enum class EWeaponDamageType : uint8;
 class AEnemyCharacter;
 class USelectCharacterClassWidget;
@@ -29,8 +30,6 @@ struct FFightInfo
 	int32 DefenderEndurance = 0;
 	int32 DefenderWeaponDamage = 0;
 
-	int32 TurnNumber = 0;
-
 	int32 AttackerTotalDamage = 0;
 };
 
@@ -48,7 +47,20 @@ public:
 
 	virtual void BeginPlay() override;
 
-protected:
+	// ------ Начало игры ------
+
+private:
+
+	void StartNewGame();
+
+	bool SpawnPlayerCharacter();
+
+	bool SpawnRandomEnemy();
+
+	void ShowSelectCharacterClassWidget() const;
+
+	UFUNCTION()
+	void HandleClassSelected(const FString& CharacterClass);
 
 	UPROPERTY()
 	APlayerCharacter* Player;
@@ -56,39 +68,43 @@ protected:
 	UPROPERTY()
 	AEnemyCharacter* Enemy;
 
-	void StartNewGame();
-	
-	void StartNextFight();
-	
-	void OnPlayerWonFight();
-	
-	void OnPlayerLostFight();
-
-	int32 ConsecutiveWins = 0;
-
 	UPROPERTY()
 	TSubclassOf<USelectCharacterClassWidget> SelectCharacterWidgetClass;
 
-	UFUNCTION()
-	void HandleClassSelected(const FString& CharacterClass);
+	int32 ConsecutiveWins = 0;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawning")
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MyParams")
 	TSubclassOf<APlayerCharacter> PlayerBlueprintClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawning")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MyParams")
 	TSubclassOf<AEnemyCharacter> EnemyBlueprintClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Spawning")
-	TArray<TSubclassOf<AEnemyCharacter>> EnemyBlueprintClasses;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
+	TArray<TSubclassOf<AEnemyCharacter>> EnemyClassesSample;
 
-	void SpawnRandomEnemy(const FActorSpawnParameters& SpawnParams);
+	
+	// ------ Бой ------
 
-	void ShowSelectCharacterClassWidget() const;
+private:
 
-	void SimulateFights();
+	void StartFight();
+
+	void DoTurn();
 
 	// Возвращает урон, который должен быть нанесён цели
 	// TODO: Обратить внимание на то, как он будет применяться к здоровью цели (косяк с отрицательным значением)
-	static int32 CalculateFight(const APlayerCharacter* InPlayer, const AEnemyCharacter* InEnemy, int32 TurnNumber,
-		bool IsPlayerTurn);
+	static int32 CalculateFight(const APlayerCharacter* InPlayer, const AEnemyCharacter* InEnemy,
+		const bool IsPlayerTurn);
+
+	FTimerHandle FightTurnTimer;
+
+	bool bPlayerTurn;
+
+	void ShowPlayerLostFightWidget() const;
+
+	UPROPERTY()
+	TSubclassOf<UPlayerLostFightWidget> PlayerLostFightWidgetClass;
+	
 };

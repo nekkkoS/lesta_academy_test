@@ -74,6 +74,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+	// ------ Инициализация ------
+
+public:
+
+	void InitializeRandomAttributes();
+
 	
 	// ------ Здоровье ------
 
@@ -95,11 +102,12 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 HP = 0;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 MaxHP = 0;
+
 	
 	// ------ Базовые статы ------
 	// TODO: Ненужные сеттеры/геттеры можно будет убрать
@@ -126,43 +134,58 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 Strength = 0;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 Agility = 0;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="BaseStat")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 Endurance = 0;
 
+
+	// ------ Оружие ------
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
+	UWeapon* Weapon;
+
 	
-	// ------ Бонусы ------
+	// ------ Level Up ------
+
+public:
+
+	void IncreaseLevel();
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
+	int32 PlayerCharacterLevel = 0;
 
 public:
 
 	void AddBonuses() const;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Bonuses")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	UBonusSystemComponent* BonusSystem;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Bonuses")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	FClassLevels ClassLevels;
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonuses")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
 	UDataTable* BonusDataTable;
 
 private:
 
 	void AddBonusesForClass(ECharacterClass Class, int32 Level, const TArray<FClassBonusRow*>& AllRows) const;
+
 	
-	// ------ ___ ------
+	// ------ Бой ------
 
 public:
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
-	UWeapon* Weapon;
 
-	void InitializeRandomAttributes();
+	int32 HitNumberInFight = 0;
 };
