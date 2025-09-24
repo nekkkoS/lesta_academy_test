@@ -38,15 +38,3 @@ void AEnemyCharacter::AddFeature() const
 	FeatureSystem->AddBonus(FeatureClass);
 }
 
-void AEnemyCharacter::InitializeRandomAttributes()
-{
-	Strength = FMath::RandRange(1, 3);
-	Agility = FMath::RandRange(1, 3);
-	Endurance = FMath::RandRange(1, 3);
-
-	UE_LOG(LogTemp, Warning, TEXT("EnemyCharacter attributes initialized:"));
-	UE_LOG(LogTemp, Warning, TEXT("Strength: %d"), Strength);
-	UE_LOG(LogTemp, Warning, TEXT("Agility: %d"), Agility);
-	UE_LOG(LogTemp, Warning, TEXT("Endurance: %d"), Endurance);
-}
-

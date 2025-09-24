@@ -104,7 +104,7 @@ private:
 
 	FTimerHandle FightTurnTimer;
 
-	bool bPlayerTurn;
+	bool IsPlayerTurn;
 
 	void ShowPlayerLostFightWidget() const;
 

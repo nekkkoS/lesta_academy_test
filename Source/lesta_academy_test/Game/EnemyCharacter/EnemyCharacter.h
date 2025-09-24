@@ -39,27 +39,16 @@ protected:
 
 public:
 	
-	void SetHP(const int32 NewHP) {HP = FMath::Clamp(NewHP, 0, MaxHP);}
+	void SetHP(const int32 NewHP) {HP = FMath::Max(0, NewHP);}
 
 	void ModifyHP(const int32 Delta) {SetHP(HP + Delta);}
 
 	int32 GetHP() const {return HP;}
 
-	void SetMaxHP(const int32 NewMaxHP) {MaxHP = FMath::Max(1, NewMaxHP);}
-
-	void ModifyMaxHP(const int32 Delta) {SetMaxHP(MaxHP + Delta);}
-
-	int32 GetMaxHP() const {return MaxHP;}
-
-	void ResetHP() {HP = MaxHP;}
-
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 HP = 0;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
-	int32 MaxHP = 1;
 
 	
 	// ------ Базовые статы ------
@@ -116,6 +105,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	UWeapon* Weapon;
-
-	void InitializeRandomAttributes();
 };

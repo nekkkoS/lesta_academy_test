@@ -68,10 +68,6 @@ void AMyGameMode::StartNewGame()
 	
 	if (!CreatePlayerCharacter())
 		return;
-	
-	if (!SpawnRandomEnemy())
-		return;
-	Enemy->InitializeRandomAttributes();
 
 	ShowSelectCharacterClassWidget();
 }
@@ -91,7 +87,6 @@ bool AMyGameMode::CreatePlayerCharacter()
 	}
 
 	Player->InitializeRandomAttributes();
-	ShowSelectCharacterClassWidget();
 
 	return true;
 }
@@ -123,6 +118,7 @@ bool AMyGameMode::SpawnRandomEnemy()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Spawned enemy of class: %s"), *Enemy->GetClass()->GetName());
+	
 	return true;
 }
 
@@ -156,6 +152,35 @@ void AMyGameMode::HandleClassSelected(ECharacterClass CharacterClass)
 		Player->ClassLevels.Warrior++;
 	else if (CharacterClass == ECharacterClass::Barbarian)
 		Player->ClassLevels.Barbarian++;
+
+	// TODO: Все параметры классов лучше в таблицу вынести
+
+	// Персонаж создаётся
+	if (!Player->Weapon)
+	{
+		if (!Player->DefaultRogueWeapon || !Player->DefaultWarriorWeapon || !Player->DefaultBarbarianWeapon)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Default weapons is not set in player."));
+			return;
+		}
+		
+		if (CharacterClass == ECharacterClass::Rogue)
+			Player->Weapon = Player->DefaultRogueWeapon;
+		else if (CharacterClass == ECharacterClass::Warrior)
+			Player->Weapon = Player->DefaultWarriorWeapon;
+		else if (CharacterClass == ECharacterClass::Barbarian)
+			Player->Weapon = Player->DefaultBarbarianWeapon;
+	}
+	
+	if (CharacterClass == ECharacterClass::Rogue)
+		Player->ModifyMaxHP(4);
+	else if (CharacterClass == ECharacterClass::Warrior)
+		Player->ModifyMaxHP(5);
+	else if (CharacterClass == ECharacterClass::Barbarian)
+		Player->ModifyMaxHP(6);
+
+	Player->ModifyMaxHP(Player->GetEndurance());
+	Player->SetHP(Player->GetMaxHP());
 	
 	Player->AddBonuses();
 	Player->IncreaseLevel();
@@ -165,9 +190,15 @@ void AMyGameMode::HandleClassSelected(ECharacterClass CharacterClass)
 
 void AMyGameMode::StartFight()
 {
+	if (!SpawnRandomEnemy())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Enemy wasn't spawned."));
+		return;
+	}
+	
 	if (!Player || !Enemy || !Player->Weapon || !Enemy->Weapon)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Player or Enemy is not ready start fight."));
+		UE_LOG(LogTemp, Error, TEXT("Player or Enemy or Weapon is not ready start fight."));
 		return;
 	}
 
@@ -176,14 +207,14 @@ void AMyGameMode::StartFight()
 	UE_LOG(LogTemp, Warning, TEXT("Player weapon: %s | Enemy weapon: %s"),
 		*Player->Weapon->WeaponName.ToString(), *Enemy->Weapon->WeaponName.ToString());
 	
-	bPlayerTurn = Player->GetAgility() >= Enemy->GetAgility();
+	IsPlayerTurn = Player->GetAgility() >= Enemy->GetAgility();
 	
 	GetWorldTimerManager().SetTimer(FightTurnTimer, this, &AMyGameMode::DoTurn, 1.0f, false);
 }
 
 void AMyGameMode::DoTurn()
 {
-	Enemy->SetHP(0);
+	/*Enemy->SetHP(0);
 	if (Player->GetHP() == 0 || Enemy->GetHP() == 0)
 	{
 		if (Player->GetHP() > 0)
@@ -197,46 +228,46 @@ void AMyGameMode::DoTurn()
 			ShowPlayerLostFightWidget();
 		}
 		return;
-	}
+	}*/
 
-	// UE_LOG(LogTemp, Warning, TEXT("=== Next turn ==="));
-	//
-	// if (bPlayerTurn)
-	// {
-	// 	if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
-	// 	{
-	// 		UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
-	// 	}
-	// 	else
-	// 	{
-	// 		/*const int32 Damage = CalculateFight(Player, Enemy, true);
-	// 		UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy on %i damage"), Damage);
-	// 		UE_LOG(LogTemp, Warning, TEXT("Current Enemy HP: %i"), Enemy->GetHP());*/
-	// 		
-	// 		Enemy->ModifyHP(-1);
-	// 		UE_LOG(LogTemp, Warning, TEXT("After Damage Enemy HP: %i"), Enemy->GetHP());
-	// 	}
-	// }
-	// else
-	// {
-	// 	if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Player->GetAgility())
-	// 	{
-	// 		UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
-	// 	}
-	// 	else
-	// 	{
-	// 		/*const int32 Damage = CalculateFight(Player, Enemy, false);
-	// 		UE_LOG(LogTemp, Warning, TEXT("Enemy attack Player on %i damage"), Damage);
-	// 		UE_LOG(LogTemp, Warning, TEXT("Current Player HP: %i"), Enemy->GetHP());*/
-	// 		
-	// 		Enemy->ModifyHP(-1);
-	// 		UE_LOG(LogTemp, Warning, TEXT("After Damage Player HP: %i"), Enemy->GetHP());
-	// 	}
-	// }
-	//
-	// bPlayerTurn = !bPlayerTurn;
-	//
-	// GetWorldTimerManager().SetTimer(FightTurnTimer, this, &AMyGameMode::DoTurn, 0.1f, false);
+	UE_LOG(LogTemp, Warning, TEXT("=== Next turn ==="));
+	
+	if (IsPlayerTurn)
+	{
+		if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
+		}
+		else
+		{
+			const int32 Damage = CalculateFight(Player, Enemy, IsPlayerTurn);
+			UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy on %i damage"), Damage);
+			UE_LOG(LogTemp, Warning, TEXT("Current Enemy HP: %i"), Enemy->GetHP());
+			
+			Enemy->ModifyHP(-1);
+			UE_LOG(LogTemp, Warning, TEXT("After Damage Enemy HP: %i"), Enemy->GetHP());
+		}
+	}
+	else
+	{
+		if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Player->GetAgility())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
+		}
+		else
+		{
+			/*const int32 Damage = CalculateFight(Player, Enemy, false);
+			UE_LOG(LogTemp, Warning, TEXT("Enemy attack Player on %i damage"), Damage);
+			UE_LOG(LogTemp, Warning, TEXT("Current Player HP: %i"), Enemy->GetHP());*/
+			
+			Enemy->ModifyHP(-1);
+			UE_LOG(LogTemp, Warning, TEXT("After Damage Player HP: %i"), Enemy->GetHP());
+		}
+	}
+	
+	IsPlayerTurn = !IsPlayerTurn;
+	
+	GetWorldTimerManager().SetTimer(FightTurnTimer, this, &AMyGameMode::DoTurn, 0.1f, false);
 }
 
 int32 AMyGameMode::CalculateFight(const APlayerCharacter* InPlayer, const AEnemyCharacter* InEnemy,
@@ -290,6 +321,7 @@ void AMyGameMode::ShowPlayerLostFightWidget() const
 void AMyGameMode::OnPlayerWonFight()
 {
 	ConsecutiveWins++;
+	ConsecutiveWins = 5;
 	if (ConsecutiveWins == 5)
 	{
 		ShowEndOfGameWidget();

@@ -149,6 +149,15 @@ public:
 	UPROPERTY()
 	UWeapon* Weapon;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
+	UWeapon* DefaultRogueWeapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
+	UWeapon* DefaultWarriorWeapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
+	UWeapon* DefaultBarbarianWeapon;
+
 	
 	// ------ Character Level ------
 
