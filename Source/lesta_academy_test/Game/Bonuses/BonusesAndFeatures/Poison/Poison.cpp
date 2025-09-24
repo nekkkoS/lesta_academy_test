@@ -5,11 +5,10 @@
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 
-void UPoison::Apply(FFightInfo& FightInfo)
+void UPoison::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	// TODO: Придумать где хранить TurnNumber
-	/*if (FightInfo.TurnNumber < 2)
+	if (OwnerStats.TurnNumber < 2)
 		return;
 
-	FightInfo.Damage += FightInfo.TurnNumber - 1;*/
+	OwnerStats.TotalDamage += OwnerStats.TurnNumber - 1;
 }

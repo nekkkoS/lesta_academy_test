@@ -16,5 +16,5 @@ class LESTA_ACADEMY_TEST_API UShield : public UBonusBase
 
 public:
 
-	virtual void Apply(FFightInfo& FightInfo) override;
+	virtual void Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats) override;
 };

@@ -6,10 +6,8 @@
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 #include "lesta_academy_test/Game/Weapon/Weapon.h"
 
-void USkeletonFeature::Apply(FFightInfo& FightInfo)
+void USkeletonFeature::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	if (FightInfo.AttackerWeaponDamageType == EWeaponDamageType::Bludgeoning)
-	{
-		FightInfo.AttackerTotalDamage *= 2;
-	}
+	if (OpponentStats.WeaponDamageType == EWeaponDamageType::Bludgeoning)
+		OpponentStats.TotalDamage *= 2;
 }

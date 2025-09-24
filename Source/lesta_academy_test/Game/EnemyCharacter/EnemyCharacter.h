@@ -90,19 +90,26 @@ protected:
 	
 	// ------ Особенности ------
 
-protected:
+public:
 
 	void AddFeature() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
-	UBonusSystemComponent* FeatureSystem;
+	UBonusSystemComponent* BonusSystem;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
-	TSubclassOf<UBonusBase> FeatureClass;
+	TSubclassOf<UBonusBase> BonusClass;
 	// ------ ___ ------
 
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	UWeapon* Weapon;
+
+	
+	// ------ Бой ------
+
+public:
+
+	int32 TurnNumberInFight = 0;
 };

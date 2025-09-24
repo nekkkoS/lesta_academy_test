@@ -5,8 +5,8 @@
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 
-void UHiddenAttack::Apply(FFightInfo& FightInfo)
+void UHiddenAttack::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	if (FightInfo.AttackerAgility > FightInfo.DefenderAgility)
-		FightInfo.Damage += 1;
+	if (OwnerStats.Agility > OpponentStats.Agility)
+		OwnerStats.TotalDamage += 1;
 }

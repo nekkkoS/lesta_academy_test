@@ -6,7 +6,7 @@
 #include "UObject/Object.h"
 #include "BonusBase.generated.h"
 
-struct FFightInfo;
+struct FUnitStats;
 /**
  * 
  */
@@ -16,6 +16,7 @@ class LESTA_ACADEMY_TEST_API UBonusBase : public UObject
 	GENERATED_BODY()
 
 public:
-	
-	virtual void Apply(FFightInfo& FightInfo) PURE_VIRTUAL(UBonusBase::Apply);
+
+	// TODO: IsOwnerAttacker как-будто бесполезный параметр
+	virtual void Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats) PURE_VIRTUAL(UBonusBase::Apply);
 };

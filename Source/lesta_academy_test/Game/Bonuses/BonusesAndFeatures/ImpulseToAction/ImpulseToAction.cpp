@@ -5,9 +5,8 @@
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 
-void UImpulseToAction::Apply(FFightInfo& FightInfo)
+void UImpulseToAction::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	// TODO: Придумать где хранить TurnNumber
-	/*if (FightInfo.TurnNumber == 1)
-		FightInfo.AttackerWeaponDamage *= 2;*/
+	if (OwnerStats.TurnNumber == 1)
+		OwnerStats.TotalDamage += OwnerStats.WeaponDamage;
 }

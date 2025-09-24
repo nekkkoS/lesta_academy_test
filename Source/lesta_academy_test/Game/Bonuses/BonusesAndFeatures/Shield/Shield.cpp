@@ -5,8 +5,8 @@
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 
-void UShield::Apply(FFightInfo& FightInfo)
+void UShield::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	if (FightInfo.DefenderStrength > FightInfo.AttackerStrength)
-		FightInfo.Damage -= 3;
+	if (OwnerStats.Strength > OpponentStats.Strength)
+		OpponentStats.TotalDamage -= 3;
 }

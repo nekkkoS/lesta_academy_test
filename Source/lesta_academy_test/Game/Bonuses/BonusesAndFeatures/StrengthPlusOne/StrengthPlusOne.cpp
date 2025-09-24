@@ -5,7 +5,7 @@
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 
-void UStrengthPlusOne::Apply(FFightInfo& FightInfo)
+void UStrengthPlusOne::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	FightInfo.AttackerStrength += 1;
+	OwnerStats.Strength += 1;
 }

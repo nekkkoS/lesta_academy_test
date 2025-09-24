@@ -17,7 +17,7 @@ AEnemyCharacter::AEnemyCharacter()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	FeatureSystem = CreateDefaultSubobject<UBonusSystemComponent>(TEXT("FeatureSystem"));
+	BonusSystem = CreateDefaultSubobject<UBonusSystemComponent>(TEXT("BonusSystem"));
 }
 
 // Called when the game starts or when spawned
@@ -29,12 +29,12 @@ void AEnemyCharacter::BeginPlay()
 
 void AEnemyCharacter::AddFeature() const
 {
-	if (!FeatureSystem || !FeatureClass)
+	if (!BonusSystem || !BonusClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("FeatureSystem or FeatureClass is not set."));
+		UE_LOG(LogTemp, Error, TEXT("BonusSystem or BonusClass is not set."));
 		return;
 	}
 	
-	FeatureSystem->AddBonus(FeatureClass);
+	BonusSystem->AddBonus(BonusClass);
 }
 

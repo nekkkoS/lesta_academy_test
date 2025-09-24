@@ -17,24 +17,17 @@ class USelectCharacterClassWidget;
 class APlayerCharacter;
 
 USTRUCT(BlueprintType)
-struct FFightInfo
+struct FUnitStats
 {
 	GENERATED_BODY()
 	
-	int32 Damage = 0;
-			
-	int32 AttackerStrength = 0;
-	int32 AttackerAgility = 0;
-	int32 AttackerEndurance = 0;
-	int32 AttackerWeaponDamage = 0;
-	EWeaponDamageType AttackerWeaponDamageType;
-
-	int32 DefenderStrength = 0;
-	int32 DefenderAgility = 0;
-	int32 DefenderEndurance = 0;
-	int32 DefenderWeaponDamage = 0;
-
-	int32 AttackerTotalDamage = 0;
+	int32 Strength = 0;
+	int32 Agility = 0;
+	int32 Endurance = 0;
+	int32 WeaponDamage = 0;
+	EWeaponDamageType WeaponDamageType;
+	int32 TurnNumber = 0;  // Номер удара юнита в бою
+	int32 TotalDamage = 0;
 };
 
 /**
@@ -82,9 +75,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MyParams")
 	TSubclassOf<APlayerCharacter> PlayerBlueprintClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MyParams")
-	TSubclassOf<AEnemyCharacter> EnemyBlueprintClass;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	TArray<TSubclassOf<AEnemyCharacter>> EnemyClassesSample;
 
@@ -98,8 +88,7 @@ private:
 	void DoTurn();
 
 	// Возвращает урон, который должен быть нанесён цели
-	// TODO: Обратить внимание на то, как он будет применяться к здоровью цели (косяк с отрицательным значением)
-	static int32 CalculateFight(const APlayerCharacter* InPlayer, const AEnemyCharacter* InEnemy,
+	static int32 CalculateFight(APlayerCharacter* InPlayer, AEnemyCharacter* InEnemy,
 		const bool IsPlayerTurn);
 
 	FTimerHandle FightTurnTimer;

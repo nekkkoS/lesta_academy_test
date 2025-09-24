@@ -3,7 +3,9 @@
 
 #include "EndurancePlusOne.h"
 
-void UEndurancePlusOne::Apply(FFightInfo& FightInfo)
+#include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
+
+void UEndurancePlusOne::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	
+	OwnerStats.Agility++;
 }

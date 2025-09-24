@@ -7,7 +7,8 @@
 #include "BonusSystemComponent.generated.h"
 
 
-struct FFightInfo;
+enum class EWeaponDamageType : uint8;
+struct FUnitStats;
 class AEnemyCharacter;
 class APlayerCharacter;
 class UBonusBase;
@@ -31,10 +32,20 @@ public:
 
 	void RemoveAllBonuses();
 	
-	void ApplyBonuses(FFightInfo& FightInfo) const;
+	void ApplyBonuses(FUnitStats& OwnerStats, FUnitStats& OpponentStats) const;
 
 protected:
 	
 	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadWrite, Category="Bonuses")
 	TArray<UBonusBase*> ActiveBonuses;
+
+	//---
+	struct FSmth
+	{
+		int32 Strength = 0;
+		int32 Agility = 0;
+		int32 Endurance = 0;
+		int32 WeaponDamage = 0;
+		EWeaponDamageType AttackerWeaponDamageType;
+	};
 };

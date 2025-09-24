@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PlayerCharacter.generated.h"
 
+struct FFightInfo;
 class UBonusBase;
 class UBonusSystemComponent;
 class UWeapon;
@@ -15,7 +16,8 @@ enum class ECharacterClass : uint8
 {
 	Rogue,
 	Warrior,
-	Barbarian
+	Barbarian,
+	None
 };
 
 USTRUCT(BlueprintType)
@@ -50,11 +52,11 @@ struct FClassBonusRow : public FTableRowBase
 
 	// Класс персонажа (Разбойник / Воин / Варвар)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacterClass Class;
+	ECharacterClass Class = ECharacterClass::None;
 
 	// Уровень, на котором даётся бонус
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Level;
+	int32 Level = 0;
 
 	// Бонусы
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -198,5 +200,5 @@ private:
 
 public:
 
-	int32 HitNumberInFight = 0;
+	int32 TurnNumberInFight = 0;
 };

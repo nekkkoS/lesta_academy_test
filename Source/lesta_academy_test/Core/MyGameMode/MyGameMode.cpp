@@ -214,9 +214,11 @@ void AMyGameMode::StartFight()
 
 void AMyGameMode::DoTurn()
 {
-	/*Enemy->SetHP(0);
 	if (Player->GetHP() == 0 || Enemy->GetHP() == 0)
 	{
+		Player->TurnNumberInFight = 0;
+		Enemy->TurnNumberInFight = 0;
+		
 		if (Player->GetHP() > 0)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("=== Player Won the Fight! ==="));
@@ -228,12 +230,13 @@ void AMyGameMode::DoTurn()
 			ShowPlayerLostFightWidget();
 		}
 		return;
-	}*/
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("=== Next turn ==="));
 	
 	if (IsPlayerTurn)
 	{
+		Player->TurnNumberInFight++;
 		if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
@@ -243,25 +246,30 @@ void AMyGameMode::DoTurn()
 			const int32 Damage = CalculateFight(Player, Enemy, IsPlayerTurn);
 			UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy on %i damage"), Damage);
 			UE_LOG(LogTemp, Warning, TEXT("Current Enemy HP: %i"), Enemy->GetHP());
+
+			if (Damage > 0)
+				Enemy->ModifyHP(-Damage);
 			
-			Enemy->ModifyHP(-1);
 			UE_LOG(LogTemp, Warning, TEXT("After Damage Enemy HP: %i"), Enemy->GetHP());
 		}
 	}
 	else
 	{
+		Enemy->TurnNumberInFight++;
 		if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Player->GetAgility())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
 		}
 		else
 		{
-			/*const int32 Damage = CalculateFight(Player, Enemy, false);
+			const int32 Damage = CalculateFight(Player, Enemy, IsPlayerTurn);
 			UE_LOG(LogTemp, Warning, TEXT("Enemy attack Player on %i damage"), Damage);
-			UE_LOG(LogTemp, Warning, TEXT("Current Player HP: %i"), Enemy->GetHP());*/
+			UE_LOG(LogTemp, Warning, TEXT("Current Player HP: %i"), Player->GetHP());
+
+			if (Damage > 0)
+				Player->ModifyHP(-Damage);
 			
-			Enemy->ModifyHP(-1);
-			UE_LOG(LogTemp, Warning, TEXT("After Damage Player HP: %i"), Enemy->GetHP());
+			UE_LOG(LogTemp, Warning, TEXT("After Damage Player HP: %i"), Player->GetHP());
 		}
 	}
 	
@@ -270,37 +278,41 @@ void AMyGameMode::DoTurn()
 	GetWorldTimerManager().SetTimer(FightTurnTimer, this, &AMyGameMode::DoTurn, 0.1f, false);
 }
 
-int32 AMyGameMode::CalculateFight(const APlayerCharacter* InPlayer, const AEnemyCharacter* InEnemy,
+int32 AMyGameMode::CalculateFight(APlayerCharacter* InPlayer, AEnemyCharacter* InEnemy,
 	const bool IsPlayerTurn)
 {
+	FUnitStats PlayerStats = {
+		InPlayer->GetStrength(),
+		InPlayer->GetAgility(),
+		InPlayer->GetEndurance(),
+		InPlayer->Weapon->BaseDamage,
+		InPlayer->Weapon->DamageType,
+		InPlayer->TurnNumberInFight,
+		InPlayer->GetStrength() + InPlayer->Weapon->BaseDamage
+	};
+
+	FUnitStats EnemyStats = {
+		InEnemy->GetStrength(),
+		InEnemy->GetAgility(),
+		InEnemy->GetEndurance(),
+		InEnemy->WeaponDamage,
+		InEnemy->Weapon->DamageType,
+		InEnemy->TurnNumberInFight,
+		InEnemy->GetStrength() + InEnemy->WeaponDamage
+	};
+	
 	if (IsPlayerTurn)
 	{
-		FFightInfo FightInfo = {
-			0,
-			InPlayer->GetStrength(),
-			InPlayer->GetAgility(),
-			InPlayer->GetEndurance(),
-			InPlayer->Weapon->BaseDamage,
-			InPlayer->Weapon->DamageType,
-			
-			InEnemy->GetStrength(),
-			InEnemy->GetAgility(),
-			InEnemy->GetEndurance(),
-			InEnemy->WeaponDamage,
-			0
-		};
+		InPlayer->BonusSystem->ApplyBonuses(PlayerStats, EnemyStats);
+		InEnemy->BonusSystem->ApplyBonuses(EnemyStats, PlayerStats);
 
-		// Обязательно! Сначала применяются все бонусы атакующего, затем защищающегося.
-		InPlayer->BonusSystem->ApplyBonuses(FightInfo);
-		FightInfo.AttackerTotalDamage = FightInfo.AttackerStrength + FightInfo.AttackerWeaponDamage + FightInfo.Damage;
-		// InEnemy->BonusSystem->ApplyBonuses(FightInfo);
-		
-		
-		return FightInfo.AttackerTotalDamage;
+		return PlayerStats.TotalDamage;
 	}
 	
+	InEnemy->BonusSystem->ApplyBonuses(EnemyStats, PlayerStats);
+	InPlayer->BonusSystem->ApplyBonuses(PlayerStats, EnemyStats);
 
-	return 0;
+	return EnemyStats.TotalDamage;
 }
 
 void AMyGameMode::ShowPlayerLostFightWidget() const

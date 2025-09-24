@@ -5,7 +5,7 @@
 
 #include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
 
-void UAgilityPlusOne::Apply(FFightInfo& FightInfo)
+void UAgilityPlusOne::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	FightInfo.AttackerAgility += 1;
+	OwnerStats.Agility++;
 }

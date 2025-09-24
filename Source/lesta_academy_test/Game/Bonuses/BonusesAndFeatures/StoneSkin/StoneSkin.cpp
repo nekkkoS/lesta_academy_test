@@ -3,7 +3,9 @@
 
 #include "StoneSkin.h"
 
-void UStoneSkin::Apply(FFightInfo& FightInfo)
+#include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
+
+void UStoneSkin::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
-	
+	OpponentStats.TotalDamage -= OwnerStats.Endurance;
 }
