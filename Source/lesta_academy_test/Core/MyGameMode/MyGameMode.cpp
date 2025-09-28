@@ -87,7 +87,6 @@ bool AMyGameMode::CreatePlayerCharacter()
 	}
 
 	Player->InitializeRandomAttributes();
-
 	return true;
 }
 
@@ -145,51 +144,16 @@ void AMyGameMode::HandleClassSelected(ECharacterClass CharacterClass)
 		UE_LOG(LogTemp, Error, TEXT("Player is not initialized."));
 		return;
 	}
-	
-	if (CharacterClass == ECharacterClass::Rogue)
-		Player->ClassLevels.Rogue++;
-	else if (CharacterClass == ECharacterClass::Warrior)
-		Player->ClassLevels.Warrior++;
-	else if (CharacterClass == ECharacterClass::Barbarian)
-		Player->ClassLevels.Barbarian++;
 
-	// TODO: Все параметры классов лучше в таблицу вынести
-
-	// Персонаж создаётся
-	if (!Player->Weapon)
-	{
-		if (!Player->DefaultRogueWeapon || !Player->DefaultWarriorWeapon || !Player->DefaultBarbarianWeapon)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Default weapons is not set in player."));
-			return;
-		}
-		
-		if (CharacterClass == ECharacterClass::Rogue)
-			Player->Weapon = Player->DefaultRogueWeapon;
-		else if (CharacterClass == ECharacterClass::Warrior)
-			Player->Weapon = Player->DefaultWarriorWeapon;
-		else if (CharacterClass == ECharacterClass::Barbarian)
-			Player->Weapon = Player->DefaultBarbarianWeapon;
-	}
-	
-	if (CharacterClass == ECharacterClass::Rogue)
-		Player->ModifyMaxHP(4);
-	else if (CharacterClass == ECharacterClass::Warrior)
-		Player->ModifyMaxHP(5);
-	else if (CharacterClass == ECharacterClass::Barbarian)
-		Player->ModifyMaxHP(6);
-
-	Player->ModifyMaxHP(Player->GetEndurance());
-	Player->SetHP(Player->GetMaxHP());
-	
-	Player->AddBonuses();
-	Player->IncreaseLevel();
-	
+	Player->UpdateLevel(CharacterClass);
 	StartFight();
 }
 
 void AMyGameMode::StartFight()
 {
+	Player->ModifyMaxHP(Player->GetEndurance());
+	Player->SetHP(Player->GetMaxHP());
+	
 	if (!SpawnRandomEnemy())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Enemy wasn't spawned."));
@@ -333,7 +297,6 @@ void AMyGameMode::ShowPlayerLostFightWidget() const
 void AMyGameMode::OnPlayerWonFight()
 {
 	ConsecutiveWins++;
-	ConsecutiveWins = 5;
 	if (ConsecutiveWins == 5)
 	{
 		ShowEndOfGameWidget();
@@ -356,6 +319,7 @@ void AMyGameMode::ShowPlayerWonFightWidget() const
 	}
 	
 	PlayerWonFightWidget->OnWeaponChange.AddDynamic(this, &AMyGameMode::OnPlayerChangeWeapon);
+	PlayerWonFightWidget->OnContinueGame.AddDynamic(this, &AMyGameMode::ContinueGameAfterFight);
 	PlayerWonFightWidget->AddToViewport();
 }
 
@@ -381,4 +345,31 @@ void AMyGameMode::OnPlayerChangeWeapon()
 		Player->Weapon = Enemy->Weapon;
 		UE_LOG(LogTemp, Warning, TEXT("Player changed weapon to: %s"), *Player->Weapon->GetName());
 	}
+}
+
+void AMyGameMode::ContinueGameAfterFight()
+{
+	if (!DestroyEnemy())
+		return;
+
+	if (Player->GetTotalLevel() > 3)
+	{
+		StartFight();
+		return;
+	}
+	
+	ShowSelectCharacterClassWidget();
+}
+
+bool AMyGameMode::DestroyEnemy()
+{
+	if (!Enemy || !IsValid(Enemy))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error to destroy enemy."));
+		return false;
+	}
+	Enemy->Destroy();
+	Enemy = nullptr;
+	
+	return true;
 }

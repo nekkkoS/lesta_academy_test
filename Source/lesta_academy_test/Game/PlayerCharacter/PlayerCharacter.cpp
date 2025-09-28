@@ -3,7 +3,9 @@
 
 #include "PlayerCharacter.h"
 
+#include "lesta_academy_test/Game/Bonuses/BonusBase/BonusBase.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
+#include "lesta_academy_test/Game/Weapon/Weapon.h"
 
 
 // Sets default values
@@ -22,45 +24,64 @@ void APlayerCharacter::BeginPlay()
 	
 }
 
-void APlayerCharacter::IncreaseLevel()
+void APlayerCharacter::UpdateLevel(const ECharacterClass ClassForUpLevel)
 {
-	PlayerCharacterLevel++;
-}
-
-void APlayerCharacter::AddBonuses() const
-{
-	if (!BonusDataTable || !BonusSystem)
+	switch (ClassForUpLevel)
 	{
-		UE_LOG(LogTemp, Error, TEXT("BonusDataTable or BonusSystem is null"));
+	case ECharacterClass::Rogue:     ClassLevels.Rogue++; break;
+	case ECharacterClass::Warrior:   ClassLevels.Warrior++; break;
+	case ECharacterClass::Barbarian: ClassLevels.Barbarian++; break;
+	default: return;
+	}
+	
+	if (!BonusSystem || !ClassParamsTable)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BonusSystem or ClassParamsTable is null"));
 		return;
 	}
 
+	// Сбрасываем HP + бонусы и выставляем заново
+	SetMaxHP(0);
 	BonusSystem->RemoveAllBonuses();
 
-	TArray<FClassBonusRow*> AllRows;
-	BonusDataTable->GetAllRows(TEXT("Bonus Lookup"), AllRows);
-	
-	AddBonusesForClass(ECharacterClass::Rogue, ClassLevels.Rogue, AllRows);
-	AddBonusesForClass(ECharacterClass::Warrior, ClassLevels.Warrior, AllRows);
-	AddBonusesForClass(ECharacterClass::Barbarian, ClassLevels.Barbarian, AllRows);
+	TArray<FClassParamsRow*> Rows;
+	ClassParamsTable->GetAllRows(TEXT("ClassParams Lookup"), Rows);
+
+	for (const auto* Row : Rows)
+	{
+		int32 Level = 0;
+
+		switch (Row->Class)
+		{
+		case ECharacterClass::Rogue:     Level = ClassLevels.Rogue; break;
+		case ECharacterClass::Warrior:   Level = ClassLevels.Warrior; break;
+		case ECharacterClass::Barbarian: Level = ClassLevels.Barbarian; break;
+		default: break;
+		}
+
+		if (Level <= 0) continue;
+
+		// HP за каждый уровень
+		ModifyMaxHP(Row->HPPerLevel * Level);
+
+		// Начальное оружие (если ещё нет)
+		if (Level >= 1 && !Weapon && Row->DefaultWeapon)
+		{
+			Weapon = Row->DefaultWeapon;
+			UE_LOG(LogTemp, Log, TEXT("Weapon set to %s"), *Weapon->WeaponName.ToString());
+		}
+		
+		if (Level >= 1 && Row->BonusAtLevel1) BonusSystem->AddBonus(Row->BonusAtLevel1);
+		if (Level >= 2 && Row->BonusAtLevel2) BonusSystem->AddBonus(Row->BonusAtLevel2);
+		if (Level >= 3 && Row->BonusAtLevel3) BonusSystem->AddBonus(Row->BonusAtLevel3);
+	}
+
+	IncreaseTotalLevel();
 }
 
-void APlayerCharacter::AddBonusesForClass(const ECharacterClass Class, const int32 Level,
-	const TArray<FClassBonusRow*>& AllRows) const
+void APlayerCharacter::IncreaseTotalLevel()
 {
-	for (int32 L = 1; L <= Level; ++L)
-	{
-		for (auto* Row : AllRows)
-		{
-			if (Row->Class == Class && Row->Level == L)
-			{
-				for (auto& BonusClass : Row->Bonuses)
-				{
-					BonusSystem->AddBonus(BonusClass);
-				}
-			}
-		}
-	}
+	TotalPlayerCharacterLevel++;
 }
 
 void APlayerCharacter::InitializeRandomAttributes()

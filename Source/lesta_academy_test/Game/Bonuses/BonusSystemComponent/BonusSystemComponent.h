@@ -38,14 +38,4 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadWrite, Category="Bonuses")
 	TArray<UBonusBase*> ActiveBonuses;
-
-	//---
-	struct FSmth
-	{
-		int32 Strength = 0;
-		int32 Agility = 0;
-		int32 Endurance = 0;
-		int32 WeaponDamage = 0;
-		EWeaponDamageType AttackerWeaponDamageType;
-	};
 };

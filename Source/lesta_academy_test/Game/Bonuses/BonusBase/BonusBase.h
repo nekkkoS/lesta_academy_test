@@ -16,7 +16,6 @@ class LESTA_ACADEMY_TEST_API UBonusBase : public UObject
 	GENERATED_BODY()
 
 public:
-
-	// TODO: IsOwnerAttacker как-будто бесполезный параметр
+	
 	virtual void Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats) PURE_VIRTUAL(UBonusBase::Apply);
 };

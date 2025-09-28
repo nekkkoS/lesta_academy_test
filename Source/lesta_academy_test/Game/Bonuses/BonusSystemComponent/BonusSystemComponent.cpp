@@ -50,7 +50,6 @@ void UBonusSystemComponent::RemoveAllBonuses()
 	ActiveBonuses.Empty();
 }
 
-// TODO: OwnerStats лучше не передавать параметром, а хранить в this
 void UBonusSystemComponent::ApplyBonuses(FUnitStats& OwnerStats, FUnitStats& OpponentStats) const
 {
 	for (const auto& Bonus : ActiveBonuses)

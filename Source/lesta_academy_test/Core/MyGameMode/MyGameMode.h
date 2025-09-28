@@ -114,4 +114,9 @@ private:
 
 	UFUNCTION()
 	void OnPlayerChangeWeapon();
+
+	UFUNCTION()
+	void ContinueGameAfterFight();
+
+	bool DestroyEnemy();
 };

@@ -21,16 +21,6 @@ enum class ECharacterClass : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FClassBonusInfo
-{
-	GENERATED_BODY()
-	
-	ECharacterClass Class;
-	int32 Level;
-	TArray<TSubclassOf<UBonusBase>> Bonuses;
-};
-
-USTRUCT(BlueprintType)
 struct FClassLevels
 {
 	GENERATED_BODY()
@@ -46,21 +36,27 @@ struct FClassLevels
 };
 
 USTRUCT(BlueprintType)
-struct FClassBonusRow : public FTableRowBase
+struct FClassParamsRow : public FTableRowBase
 {
 	GENERATED_BODY()
-
-	// Класс персонажа (Разбойник / Воин / Варвар)
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ECharacterClass Class = ECharacterClass::None;
-
-	// Уровень, на котором даётся бонус
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Level = 0;
+	int32 HPPerLevel = 0;
 
-	// Бонусы
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<UBonusBase>> Bonuses;
+	UWeapon* DefaultWeapon = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UBonusBase> BonusAtLevel1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UBonusBase> BonusAtLevel2;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UBonusBase> BonusAtLevel3;
 };
 
 UCLASS()
@@ -150,50 +146,36 @@ public:
 
 	UPROPERTY()
 	UWeapon* Weapon;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
-	UWeapon* DefaultRogueWeapon;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
-	UWeapon* DefaultWarriorWeapon;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
-	UWeapon* DefaultBarbarianWeapon;
-
 	
-	// ------ Character Level ------
+	// ------ Level up ------
 
 public:
 
-	void IncreaseLevel();
+	void UpdateLevel(const ECharacterClass ClassForUpLevel);
 
-	int32 GetCurrentLevel() const {return PlayerCharacterLevel;}
+	int32 GetTotalLevel() const {return TotalPlayerCharacterLevel;}
 
 private:
+
+	void IncreaseTotalLevel();
 	
-	int32 PlayerCharacterLevel = 0;
+	int32 TotalPlayerCharacterLevel = 0;
 
 
 	// ------ Бонусы ------
 
 public:
 
-	void AddBonuses() const;
-
 	UPROPERTY()
 	UBonusSystemComponent* BonusSystem;
+
+protected:
 
 	UPROPERTY()
 	FClassLevels ClassLevels;
 
-protected:
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
-	UDataTable* BonusDataTable;
-
-private:
-
-	void AddBonusesForClass(ECharacterClass Class, int32 Level, const TArray<FClassBonusRow*>& AllRows) const;
+	UDataTable* ClassParamsTable;
 
 	
 	// ------ Бой ------
