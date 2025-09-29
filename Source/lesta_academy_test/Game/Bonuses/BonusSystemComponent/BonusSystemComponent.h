@@ -9,8 +9,6 @@
 
 enum class EWeaponDamageType : uint8;
 struct FUnitStats;
-class AEnemyCharacter;
-class APlayerCharacter;
 class UBonusBase;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -36,6 +34,6 @@ public:
 
 protected:
 	
-	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadWrite, Category="Bonuses")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	TArray<UBonusBase*> ActiveBonuses;
 };

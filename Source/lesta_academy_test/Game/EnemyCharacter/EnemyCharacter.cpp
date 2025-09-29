@@ -3,11 +3,7 @@
 
 #include "EnemyCharacter.h"
 
-#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/DragonFeature/DragonFeature.h"
-#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/HiddenAttack/HiddenAttack.h"
-#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/SkeletonFeature/SkeletonFeature.h"
-#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/SlimeFeature/SlimeFeature.h"
-#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/StoneSkin/StoneSkin.h"
+#include "lesta_academy_test/Game/Bonuses/BonusBase/BonusBase.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
 
 
@@ -30,10 +26,7 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::AddFeature() const
 {
 	if (!BonusSystem || !BonusClass)
-	{
-		UE_LOG(LogTemp, Error, TEXT("BonusSystem or BonusClass is not set."));
 		return;
-	}
 	
 	BonusSystem->AddBonus(BonusClass);
 }

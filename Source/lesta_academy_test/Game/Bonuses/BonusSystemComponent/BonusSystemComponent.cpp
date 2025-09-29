@@ -3,8 +3,7 @@
 
 #include "BonusSystemComponent.h"
 
-#include "lesta_academy_test/Core/MyGameMode/MyGameMode.h"
-#include "lesta_academy_test/Game/Bonuses/BonusesAndFeatures/HiddenAttack/HiddenAttack.h"
+#include "lesta_academy_test/Game/Bonuses/BonusBase/BonusBase.h"
 
 
 // Sets default values for this component's properties

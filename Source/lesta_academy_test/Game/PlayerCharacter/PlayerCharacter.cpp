@@ -76,12 +76,8 @@ void APlayerCharacter::UpdateLevel(const ECharacterClass ClassForUpLevel)
 		if (Level >= 3 && Row->BonusAtLevel3) BonusSystem->AddBonus(Row->BonusAtLevel3);
 	}
 
-	IncreaseTotalLevel();
-}
-
-void APlayerCharacter::IncreaseTotalLevel()
-{
 	TotalPlayerCharacterLevel++;
+	ModifyMaxHP(GetEndurance() * TotalPlayerCharacterLevel);
 }
 
 void APlayerCharacter::InitializeRandomAttributes()

@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "PlayerCharacter.generated.h"
 
-struct FFightInfo;
 class UBonusBase;
 class UBonusSystemComponent;
 class UWeapon;
@@ -73,11 +72,12 @@ protected:
 	virtual void BeginPlay() override;
 
 
-	// ------ Инициализация ------
+	// ------ Инициализация атрибутов ------
 
 public:
 
 	void InitializeRandomAttributes();
+
 	
 	// ------ Здоровье ------
 
@@ -89,13 +89,11 @@ public:
 
 	int32 GetHP() const {return HP;}
 
-	void SetMaxHP(const int32 NewMaxHP) {MaxHP = FMath::Max(1, NewMaxHP);}
+	void SetMaxHP(const int32 NewMaxHP) {MaxHP = FMath::Max(0, NewMaxHP);}
 
 	void ModifyMaxHP(const int32 Delta) {SetMaxHP(MaxHP + Delta);}
 
 	int32 GetMaxHP() const {return MaxHP;}
-
-	void ResetHP() {HP = MaxHP;}
 
 protected:
 
@@ -110,21 +108,9 @@ protected:
 
 public:
 
-	void SetStrength(const int32 NewStrength) {Strength = FMath::Max(0, NewStrength);}
-
-	void ModifyStrength(const int32 Delta) {Strength = FMath::Max(0, Strength + Delta);}
-
 	int32 GetStrength() const {return Strength;}
 
-	void SetAgility(const int32 NewAgility) {Agility = FMath::Max(0, NewAgility);}
-
-	void ModifyAgility(const int32 Delta) {Agility = FMath::Max(0, Agility + Delta);}
-
 	int32 GetAgility() const {return Agility;}
-
-	void SetEndurance(const int32 NewEndurance) {Endurance = FMath::Max(0, NewEndurance);}
-
-	void ModifyEndurance(const int32 Delta) {Endurance = FMath::Max(0, Endurance + Delta);}
 
 	int32 GetEndurance() const {return Endurance;}
 
@@ -146,6 +132,7 @@ public:
 
 	UPROPERTY()
 	UWeapon* Weapon;
+
 	
 	// ------ Level up ------
 
@@ -156,8 +143,6 @@ public:
 	int32 GetTotalLevel() const {return TotalPlayerCharacterLevel;}
 
 private:
-
-	void IncreaseTotalLevel();
 	
 	int32 TotalPlayerCharacterLevel = 0;
 

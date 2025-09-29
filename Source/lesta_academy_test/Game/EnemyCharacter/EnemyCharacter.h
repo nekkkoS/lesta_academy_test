@@ -55,26 +55,13 @@ protected:
 	
 public:
 
-	void SetStrength(const int32 NewStrength) {Strength = FMath::Max(0, NewStrength);}
-
-	void ModifyStrength(const int32 Delta) {Strength = FMath::Max(0, Strength + Delta);}
-
 	int32 GetStrength() const {return Strength;}
-
-	void SetAgility(const int32 NewAgility) {Agility = FMath::Max(0, NewAgility);}
-
-	void ModifyAgility(const int32 Delta) {Agility = FMath::Max(0, Agility + Delta);}
 
 	int32 GetAgility() const {return Agility;}
 
-	void SetEndurance(const int32 NewEndurance) {Endurance = FMath::Max(0, NewEndurance);}
-
-	void ModifyEndurance(const int32 Delta) {Endurance = FMath::Max(0, Endurance + Delta);}
-
 	int32 GetEndurance() const {return Endurance;}
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
-	int32 WeaponDamage = 0;
+	int32 GetWeaponDamage() const {return WeaponDamage;}
 
 protected:
 
@@ -86,6 +73,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
 	int32 Endurance = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0"), Category="MyParams")
+	int32 WeaponDamage = 0;
 
 	
 	// ------ Особенности ------
@@ -99,7 +89,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
 	TSubclassOf<UBonusBase> BonusClass;
-	// ------ ___ ------
+
+	
+	// ------ Оружие ------
 
 public:
 
@@ -107,7 +99,7 @@ public:
 	UWeapon* Weapon;
 
 	
-	// ------ Бой ------
+	// ------ Прочее ------
 
 public:
 

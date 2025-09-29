@@ -151,7 +151,6 @@ void AMyGameMode::HandleClassSelected(ECharacterClass CharacterClass)
 
 void AMyGameMode::StartFight()
 {
-	Player->ModifyMaxHP(Player->GetEndurance());
 	Player->SetHP(Player->GetMaxHP());
 	
 	if (!SpawnRandomEnemy())
@@ -210,10 +209,7 @@ void AMyGameMode::DoTurn()
 			const int32 Damage = CalculateFight(Player, Enemy, IsPlayerTurn);
 			UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy on %i damage"), Damage);
 			UE_LOG(LogTemp, Warning, TEXT("Current Enemy HP: %i"), Enemy->GetHP());
-
-			if (Damage > 0)
-				Enemy->ModifyHP(-Damage);
-			
+			Enemy->ModifyHP(-Damage);
 			UE_LOG(LogTemp, Warning, TEXT("After Damage Enemy HP: %i"), Enemy->GetHP());
 		}
 	}
@@ -229,10 +225,7 @@ void AMyGameMode::DoTurn()
 			const int32 Damage = CalculateFight(Player, Enemy, IsPlayerTurn);
 			UE_LOG(LogTemp, Warning, TEXT("Enemy attack Player on %i damage"), Damage);
 			UE_LOG(LogTemp, Warning, TEXT("Current Player HP: %i"), Player->GetHP());
-
-			if (Damage > 0)
-				Player->ModifyHP(-Damage);
-			
+			Player->ModifyHP(-Damage);
 			UE_LOG(LogTemp, Warning, TEXT("After Damage Player HP: %i"), Player->GetHP());
 		}
 	}
@@ -259,10 +252,10 @@ int32 AMyGameMode::CalculateFight(APlayerCharacter* InPlayer, AEnemyCharacter* I
 		InEnemy->GetStrength(),
 		InEnemy->GetAgility(),
 		InEnemy->GetEndurance(),
-		InEnemy->WeaponDamage,
+		InEnemy->GetWeaponDamage(),
 		InEnemy->Weapon->DamageType,
 		InEnemy->TurnNumberInFight,
-		InEnemy->GetStrength() + InEnemy->WeaponDamage
+		InEnemy->GetStrength() + InEnemy->GetWeaponDamage()
 	};
 	
 	if (IsPlayerTurn)
@@ -270,13 +263,13 @@ int32 AMyGameMode::CalculateFight(APlayerCharacter* InPlayer, AEnemyCharacter* I
 		InPlayer->BonusSystem->ApplyBonuses(PlayerStats, EnemyStats);
 		InEnemy->BonusSystem->ApplyBonuses(EnemyStats, PlayerStats);
 
-		return PlayerStats.TotalDamage;
+		return FMath::Max(0, PlayerStats.TotalDamage);
 	}
 	
 	InEnemy->BonusSystem->ApplyBonuses(EnemyStats, PlayerStats);
 	InPlayer->BonusSystem->ApplyBonuses(PlayerStats, EnemyStats);
-
-	return EnemyStats.TotalDamage;
+	
+	return FMath::Max(0, EnemyStats.TotalDamage);
 }
 
 void AMyGameMode::ShowPlayerLostFightWidget() const
@@ -352,7 +345,7 @@ void AMyGameMode::ContinueGameAfterFight()
 	if (!DestroyEnemy())
 		return;
 
-	if (Player->GetTotalLevel() > 3)
+	if (Player->GetTotalLevel() >= 3)
 	{
 		StartFight();
 		return;
