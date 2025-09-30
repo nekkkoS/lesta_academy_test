@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "MyHUD.generated.h"
 
+class UHUDWidget;
 /**
  * 
  */
@@ -13,4 +14,18 @@ UCLASS()
 class LESTA_ACADEMY_TEST_API AMyHUD : public AHUD
 {
 	GENERATED_BODY()
+
+public:
+
+	virtual void BeginPlay() override;
+
+	UHUDWidget* GetHUDWidget() const {return HUDWidget;}
+
+private:
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UHUDWidget> HUDWidgetClass;
+
+	UPROPERTY()
+	UHUDWidget* HUDWidget;
 };

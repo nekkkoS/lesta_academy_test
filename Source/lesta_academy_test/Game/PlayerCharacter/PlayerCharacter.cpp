@@ -3,8 +3,12 @@
 
 #include "PlayerCharacter.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "lesta_academy_test/Core/MyHUD/MyHUD.h"
 #include "lesta_academy_test/Game/Bonuses/BonusBase/BonusBase.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
+#include "lesta_academy_test/Game/UI/HUDWidget/HUDWidget.h"
+#include "lesta_academy_test/Game/UI/SelectedClassesWidget/SelectedClassesWidget.h"
 #include "lesta_academy_test/Game/Weapon/Weapon.h"
 
 
@@ -75,6 +79,31 @@ void APlayerCharacter::UpdateLevel(const ECharacterClass ClassForUpLevel)
 		if (Level >= 2 && Row->BonusAtLevel2) BonusSystem->AddBonus(Row->BonusAtLevel2);
 		if (Level >= 3 && Row->BonusAtLevel3) BonusSystem->AddBonus(Row->BonusAtLevel3);
 	}
+
+	// Обновляем значения выбранных классов в виджете
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!PC)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error getting PlayerController"));
+		return;
+	}
+
+	AMyHUD* HUD = Cast<AMyHUD>(PC->GetHUD());
+	if (!HUD)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error getting HUD"));
+		return;
+	}
+
+	UHUDWidget* HUDWidget = HUD->GetHUDWidget();
+	if (!HUDWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error getting HUDWidget"));
+		return;
+	}
+
+	HUDWidget->SelectedClassesWidget->UpdateClassLevels(ClassLevels);
+	
 
 	TotalPlayerCharacterLevel++;
 	ModifyMaxHP(GetEndurance() * TotalPlayerCharacterLevel);

@@ -44,8 +44,6 @@ public:
 
 	virtual void BeginPlay() override;
 
-	// ------ Начало игры ------
-
 private:
 
 	void StartNewGame();
@@ -67,8 +65,6 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<USelectCharacterClassWidget> SelectCharacterWidgetClass;
-
-	int32 ConsecutiveWins = 0;
 
 protected:
 
@@ -93,7 +89,14 @@ private:
 
 	FTimerHandle FightTurnTimer;
 
-	bool IsPlayerTurn;
+	bool IsPlayerTurn = false;
+
+	int32 ConsecutiveWins = 0;
+
+
+	// ------ После боя ------
+
+private:
 
 	void ShowPlayerLostFightWidget() const;
 
