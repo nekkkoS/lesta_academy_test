@@ -232,7 +232,8 @@ void AMyGameMode::DoTurn()
 	
 	IsPlayerTurn = !IsPlayerTurn;
 	
-	GetWorldTimerManager().SetTimer(FightTurnTimer, this, &AMyGameMode::DoTurn, 0.1f, false);
+	GetWorldTimerManager().SetTimer(FightTurnTimer, this, &AMyGameMode::DoTurn, DelayBetweenMoves,
+		false);
 }
 
 int32 AMyGameMode::CalculateFight(APlayerCharacter* InPlayer, AEnemyCharacter* InEnemy,

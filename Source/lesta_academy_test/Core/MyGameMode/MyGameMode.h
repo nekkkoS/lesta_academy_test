@@ -77,6 +77,11 @@ protected:
 	
 	// ------ Бой ------
 
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
+	float DelayBetweenMoves = 0.5f;
+
 private:
 
 	void StartFight();
