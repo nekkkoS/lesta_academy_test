@@ -337,6 +337,13 @@ void AMyGameMode::OnPlayerChangeWeapon()
 	if (Player && Enemy && Enemy->Weapon)
 	{
 		Player->Weapon = Enemy->Weapon;
+
+		const FString Message = FString::Printf(TEXT("Игрок заменил оружие на: %s"),
+			*Player->Weapon->WeaponName.ToString());
+		
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, Message);
+		
 		UE_LOG(LogTemp, Warning, TEXT("Player changed weapon to: %s"), *Player->Weapon->GetName());
 	}
 }

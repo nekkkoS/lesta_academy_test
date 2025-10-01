@@ -136,9 +136,13 @@ void APlayerCharacter::InitializeRandomAttributes()
 	Agility = FMath::RandRange(1, 3);
 	Endurance = FMath::RandRange(1, 3);
 
-	UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter attributes initialized:"));
-	UE_LOG(LogTemp, Warning, TEXT("Strength: %d"), Strength);
-	UE_LOG(LogTemp, Warning, TEXT("Agility: %d"), Agility);
-	UE_LOG(LogTemp, Warning, TEXT("Endurance: %d"), Endurance);
+	const FString AttributesMessage = FString::Printf(
+		TEXT("PlayerCharacter attributes initialized: Strength: %d, Agility: %d, Endurance: %d"),
+		Strength, Agility, Endurance);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, AttributesMessage);
+	}
 }
 
