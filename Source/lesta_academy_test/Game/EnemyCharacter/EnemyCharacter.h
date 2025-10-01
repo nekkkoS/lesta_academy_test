@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "EnemyCharacter.generated.h"
 
+class UHPWidget;
+class UWidgetComponent;
 class UBonusBase;
 class UBonusSystemComponent;
 class UWeapon;
@@ -39,7 +41,7 @@ protected:
 
 public:
 	
-	void SetHP(const int32 NewHP) {HP = FMath::Max(0, NewHP);}
+	void SetHP(const int32 NewHP) {HP = FMath::Max(0, NewHP); UpdateHPWidget();}
 
 	void ModifyHP(const int32 Delta) {SetHP(HP + Delta);}
 
@@ -97,6 +99,19 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MyParams")
 	UWeapon* Weapon;
+
+
+	// ------ Виджет HP ------
+
+protected:
+
+	void UpdateHPWidget() const;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
+	UWidgetComponent* HPWidgetComponent;
+
+	UPROPERTY()
+	UHPWidget* HPWidgetInstance;
 
 	
 	// ------ Прочее ------

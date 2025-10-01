@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "PlayerCharacter.generated.h"
 
+class UHPWidget;
+class UWidgetComponent;
 class UBonusBase;
 class UBonusSystemComponent;
 class UWeapon;
@@ -83,7 +85,7 @@ public:
 
 public:
 	
-	void SetHP(const int32 NewHP) {HP = FMath::Clamp(NewHP, 0, MaxHP);}
+	void SetHP(const int32 NewHP) {HP = FMath::Clamp(NewHP, 0, MaxHP); UpdateHPWidget();}
 
 	void ModifyHP(const int32 Delta) {SetHP(HP + Delta);}
 
@@ -168,4 +170,17 @@ protected:
 public:
 
 	int32 TurnNumberInFight = 0;
+
+
+	// ------ Виджет HP ------
+
+protected:
+
+	void UpdateHPWidget() const;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="MyParams")
+	UWidgetComponent* HPWidgetComponent;
+
+	UPROPERTY()
+	UHPWidget* HPWidgetInstance;
 };

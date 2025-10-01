@@ -3,10 +3,13 @@
 
 #include "PlayerCharacter.h"
 
+#include "Components/TextBlock.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "lesta_academy_test/Core/MyHUD/MyHUD.h"
 #include "lesta_academy_test/Game/Bonuses/BonusBase/BonusBase.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
+#include "lesta_academy_test/Game/UI/HPWidget/HPWidget.h"
 #include "lesta_academy_test/Game/UI/HUDWidget/HUDWidget.h"
 #include "lesta_academy_test/Game/UI/SelectedClassesWidget/SelectedClassesWidget.h"
 #include "lesta_academy_test/Game/Weapon/Weapon.h"
@@ -19,13 +22,23 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	BonusSystem = CreateDefaultSubobject<UBonusSystemComponent>(TEXT("BonusSystem"));
+	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPWidgetComponent"));
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+
+	if (UUserWidget* Widget = HPWidgetComponent->GetWidget())
+	{
+		HPWidgetInstance = Cast<UHPWidget>(Widget);
+		if (!HPWidgetInstance)
+			UE_LOG(LogTemp, Error, TEXT("HPWidget is not assigned to HPWidgetComponent"));
+	}
+
+	UpdateHPWidget();
 }
 
 void APlayerCharacter::UpdateLevel(const ECharacterClass ClassForUpLevel)
@@ -107,6 +120,14 @@ void APlayerCharacter::UpdateLevel(const ECharacterClass ClassForUpLevel)
 
 	TotalPlayerCharacterLevel++;
 	ModifyMaxHP(GetEndurance() * TotalPlayerCharacterLevel);
+}
+
+void APlayerCharacter::UpdateHPWidget() const
+{
+	if (!HPWidgetInstance)
+		return;
+	
+	HPWidgetInstance->CurrentHP->SetText(FText::FromString(FString::Printf(TEXT("%d"), HP)));
 }
 
 void APlayerCharacter::InitializeRandomAttributes()
