@@ -5,6 +5,8 @@
 
 #include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "lesta_academy_test/Game/Bonuses/BonusBase/BonusBase.h"
 #include "lesta_academy_test/Game/Bonuses/BonusSystemComponent/BonusSystemComponent.h"
 #include "lesta_academy_test/Game/UI/HPWidget/HPWidget.h"
@@ -52,5 +54,48 @@ void AEnemyCharacter::UpdateHPWidget() const
 		return;
 	
 	HPWidgetInstance->CurrentHP->SetText(FText::FromString(FString::Printf(TEXT("%d"), HP)));
+}
+
+void AEnemyCharacter::PlayAttackEffect(AActor* Target, bool bHit) const
+{
+	if (!Target)
+		return;
+
+	FVector TargetLocation = Target->GetActorLocation();
+
+	if (!bHit)
+	{
+		// Делаем случайную точку в кольцевой области между MinMissRadius и MaxMissRadius
+		const float RandomRadius = FMath::FRandRange(MinMissRadius, MaxMissRadius);
+		const float RandomAngle = FMath::FRandRange(0.f, 2 * PI);
+
+		const FVector RandomOffset = FVector(
+			FMath::Cos(RandomAngle) * RandomRadius,
+			FMath::Sin(RandomAngle) * RandomRadius,
+			0.f
+			);
+		
+		TargetLocation += RandomOffset;
+	}
+	
+	if (AttackVFX)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			AttackVFX,
+			TargetLocation,
+			(TargetLocation - GetActorLocation()).Rotation()
+		);
+	}
+	
+	if (AttackSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			AttackSound,
+			TargetLocation,
+			AttackSoundVolume
+		);
+	}
 }
 

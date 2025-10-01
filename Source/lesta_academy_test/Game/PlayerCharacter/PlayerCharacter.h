@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PlayerCharacter.generated.h"
 
+class UNiagaraSystem;
 class UHPWidget;
 class UWidgetComponent;
 class UBonusBase;
@@ -166,6 +167,27 @@ protected:
 
 	
 	// ------ Бой ------
+
+public:
+
+	void PlayAttackEffect(AActor* Target, bool bHit) const;
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "MyParams")
+	UNiagaraSystem* AttackVFX;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "MyParams", meta = (ClampMin = "0.0"))
+	float MinMissRadius = 5.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MyParams", meta = (ClampMin = "0.0"))
+	float MaxMissRadius = 10.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "MyParams")
+	USoundBase* AttackSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MyParams", meta = (ClampMin = "0.0", ClampMax = "2.0"))
+	float AttackSoundVolume = 0.3f;
 
 public:
 

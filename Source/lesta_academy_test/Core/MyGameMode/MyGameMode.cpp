@@ -202,6 +202,7 @@ void AMyGameMode::DoTurn()
 		Player->TurnNumberInFight++;
 		if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Enemy->GetAgility())
 		{
+			Player->PlayAttackEffect(Enemy, false);
 			UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
 		}
 		else
@@ -209,6 +210,10 @@ void AMyGameMode::DoTurn()
 			const int32 Damage = CalculateFight(Player, Enemy, IsPlayerTurn);
 			UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy on %i damage"), Damage);
 			UE_LOG(LogTemp, Warning, TEXT("Current Enemy HP: %i"), Enemy->GetHP());
+
+			if (Damage > 0)
+				Player->PlayAttackEffect(Enemy, true);
+			
 			Enemy->ModifyHP(-Damage);
 			UE_LOG(LogTemp, Warning, TEXT("After Damage Enemy HP: %i"), Enemy->GetHP());
 		}
@@ -218,6 +223,7 @@ void AMyGameMode::DoTurn()
 		Enemy->TurnNumberInFight++;
 		if (FMath::RandRange(1, Player->GetAgility() + Enemy->GetAgility()) <= Player->GetAgility())
 		{
+			Enemy->PlayAttackEffect(Player, false);
 			UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
 		}
 		else
@@ -225,6 +231,10 @@ void AMyGameMode::DoTurn()
 			const int32 Damage = CalculateFight(Player, Enemy, IsPlayerTurn);
 			UE_LOG(LogTemp, Warning, TEXT("Enemy attack Player on %i damage"), Damage);
 			UE_LOG(LogTemp, Warning, TEXT("Current Player HP: %i"), Player->GetHP());
+
+			if (Damage > 0)
+				Enemy->PlayAttackEffect(Player, true);
+			
 			Player->ModifyHP(-Damage);
 			UE_LOG(LogTemp, Warning, TEXT("After Damage Player HP: %i"), Player->GetHP());
 		}
