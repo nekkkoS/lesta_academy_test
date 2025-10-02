@@ -61,11 +61,19 @@ void AEnemyCharacter::PlayAttackEffect(AActor* Target, bool bHit) const
 	if (!Target)
 		return;
 
+	const FVector ImpactLocation = GetAttackImpactLocation(Target, bHit);
+	SpawnAttackEffects(ImpactLocation);
+}
+
+FVector AEnemyCharacter::GetAttackImpactLocation(AActor* Target, bool bHit) const
+{
+	if (!Target)
+		return FVector::ZeroVector;
+
 	FVector TargetLocation = Target->GetActorLocation();
 
 	if (!bHit)
 	{
-		// Делаем случайную точку в кольцевой области между MinMissRadius и MaxMissRadius
 		const float RandomRadius = FMath::FRandRange(MinMissRadius, MaxMissRadius);
 		const float RandomAngle = FMath::FRandRange(0.f, 2 * PI);
 
@@ -73,27 +81,35 @@ void AEnemyCharacter::PlayAttackEffect(AActor* Target, bool bHit) const
 			FMath::Cos(RandomAngle) * RandomRadius,
 			FMath::Sin(RandomAngle) * RandomRadius,
 			0.f
-			);
-		
+		);
+
 		TargetLocation += RandomOffset;
 	}
-	
-	if (AttackVFX)
+
+	TargetLocation.Z += HitVfxOffsetZ;
+	TargetLocation.X += HitVfxOffsetX;
+
+	return TargetLocation;
+}
+
+void AEnemyCharacter::SpawnAttackEffects(const FVector& Location) const
+{
+	if (AttackVfx)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			GetWorld(),
-			AttackVFX,
-			TargetLocation,
-			(TargetLocation - GetActorLocation()).Rotation()
+			AttackVfx,
+			Location,
+			(Location - GetActorLocation()).Rotation()
 		);
 	}
-	
+
 	if (AttackSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(
 			this,
 			AttackSound,
-			TargetLocation,
+			Location,
 			AttackSoundVolume
 		);
 	}

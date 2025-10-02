@@ -123,20 +123,30 @@ public:
 
 protected:
 
+	FVector GetAttackImpactLocation(AActor* Target, bool bHit) const;
+
+	void SpawnAttackEffects(const FVector& Location) const;
+
 	UPROPERTY(EditDefaultsOnly, Category = "MyParams")
-	UNiagaraSystem* AttackVFX;
+	UNiagaraSystem* AttackVfx;
+
+	UPROPERTY(EditDefaultsOnly, Category="MyParams")
+	float HitVfxOffsetZ = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category="MyParams")
+	float HitVfxOffsetX = 0.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "MyParams", meta = (ClampMin = "0.0"))
-	float MinMissRadius = 5.0f;
+	float MinMissRadius = 200.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "MyParams", meta = (ClampMin = "0.0"))
-	float MaxMissRadius = 10.0f;
+	float MaxMissRadius = 250.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "MyParams")
 	USoundBase* AttackSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "MyParams", meta = (ClampMin = "0.0", ClampMax = "2.0"))
-	float AttackSoundVolume = 0.3f;
+	float AttackSoundVolume = 0.1f;
 	
 public:
 
