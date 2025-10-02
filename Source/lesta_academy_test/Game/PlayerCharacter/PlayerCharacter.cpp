@@ -185,8 +185,6 @@ void APlayerCharacter::InitializeRandomAttributes()
 		Strength, Agility, Endurance);
 
 	if (GEngine)
-	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, AttributesMessage);
-	}
 }
 

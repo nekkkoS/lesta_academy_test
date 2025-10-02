@@ -20,7 +20,9 @@ USTRUCT(BlueprintType)
 struct FUnitStats
 {
 	GENERATED_BODY()
-	
+
+	bool IsPlayer = true;
+	FString OwnerStatsNameForMsg = TEXT("None");
 	int32 Strength = 0;
 	int32 Agility = 0;
 	int32 Endurance = 0;

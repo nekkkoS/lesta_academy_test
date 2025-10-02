@@ -9,5 +9,15 @@
 void USkeletonFeature::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
 	if (OpponentStats.WeaponDamageType == EWeaponDamageType::Bludgeoning)
+	{
 		OpponentStats.TotalDamage *= 2;
+		
+		const FString Message = FString::Printf(TEXT("Особенность скелета применена для %s"),
+		*OwnerStats.OwnerStatsNameForMsg);
+		if (GEngine)
+		{
+			const FColor MessageColor = OwnerStats.IsPlayer ? FColor::Green : FColor::Red;
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, MessageColor, Message);
+		}
+	}
 }

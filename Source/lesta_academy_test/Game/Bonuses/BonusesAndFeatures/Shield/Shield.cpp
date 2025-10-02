@@ -8,5 +8,15 @@
 void UShield::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
 	if (OwnerStats.Strength > OpponentStats.Strength)
+	{
 		OpponentStats.TotalDamage -= 3;
+		
+		const FString Message = FString::Printf(TEXT("Щит применён для %s"),
+		*OwnerStats.OwnerStatsNameForMsg);
+		if (GEngine)
+		{
+			const FColor MessageColor = OwnerStats.IsPlayer ? FColor::Green : FColor::Red;
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, MessageColor, Message);
+		}
+	}
 }

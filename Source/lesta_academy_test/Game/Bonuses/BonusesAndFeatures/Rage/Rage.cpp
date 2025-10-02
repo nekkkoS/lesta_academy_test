@@ -11,4 +11,12 @@ void URage::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 		OwnerStats.TotalDamage += 2;
 	else
 		OwnerStats.TotalDamage -= 1;
+
+	const FString Message = FString::Printf(TEXT("Ярость применена для %s"),
+		*OwnerStats.OwnerStatsNameForMsg);
+	if (GEngine)
+	{
+		const FColor MessageColor = OwnerStats.IsPlayer ? FColor::Green : FColor::Red;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, MessageColor, Message);
+	}
 }

@@ -196,6 +196,11 @@ void AMyGameMode::DoTurn()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("=== Next turn ==="));
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple,
+			TEXT("----- Следующий ход -----"));
+	}
 	
 	if (IsPlayerTurn)
 	{
@@ -204,6 +209,11 @@ void AMyGameMode::DoTurn()
 		{
 			Player->PlayAttackEffect(Enemy, false);
 			UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald,
+					TEXT("Игрок промахнулся"));
+			}
 		}
 		else
 		{
@@ -225,6 +235,11 @@ void AMyGameMode::DoTurn()
 		{
 			Enemy->PlayAttackEffect(Player, false);
 			UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald,
+					TEXT("Враг промахнулся"));
+			}
 		}
 		else
 		{
@@ -250,6 +265,8 @@ int32 AMyGameMode::CalculateFight(APlayerCharacter* InPlayer, AEnemyCharacter* I
 	const bool IsPlayerTurn)
 {
 	FUnitStats PlayerStats = {
+		true,
+		TEXT("Игрока"),
 		InPlayer->GetStrength(),
 		InPlayer->GetAgility(),
 		InPlayer->GetEndurance(),
@@ -260,6 +277,8 @@ int32 AMyGameMode::CalculateFight(APlayerCharacter* InPlayer, AEnemyCharacter* I
 	};
 
 	FUnitStats EnemyStats = {
+		false,
+		TEXT("Врага"),
 		InEnemy->GetStrength(),
 		InEnemy->GetAgility(),
 		InEnemy->GetEndurance(),
@@ -352,7 +371,7 @@ void AMyGameMode::OnPlayerChangeWeapon()
 			*Player->Weapon->WeaponName.ToString());
 		
 		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, Message);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, Message);
 		
 		UE_LOG(LogTemp, Warning, TEXT("Player changed weapon to: %s"), *Player->Weapon->GetName());
 	}

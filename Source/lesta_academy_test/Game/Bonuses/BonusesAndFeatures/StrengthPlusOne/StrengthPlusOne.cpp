@@ -8,4 +8,12 @@
 void UStrengthPlusOne::Apply(FUnitStats& OwnerStats, FUnitStats& OpponentStats)
 {
 	OwnerStats.Strength += 1;
+
+	const FString Message = FString::Printf(TEXT("Сила + 1 применена для %s"),
+		*OwnerStats.OwnerStatsNameForMsg);
+	if (GEngine)
+	{
+		const FColor MessageColor = OwnerStats.IsPlayer ? FColor::Green : FColor::Red;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, MessageColor, Message);
+	}
 }
