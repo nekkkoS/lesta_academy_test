@@ -20,6 +20,8 @@ public:
 
 	void UpdateClassLevels(const FClassLevels& Levels) const;
 
+	void UpdateCurrentWeapon(const FString& WeaponName) const;
+
 private:
 
 	UPROPERTY(meta = (BindWidget))
@@ -30,4 +32,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* BarbarianNum;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* CurrentWeapon;
 };

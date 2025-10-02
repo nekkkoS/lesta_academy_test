@@ -21,3 +21,11 @@ void USelectedClassesWidget::UpdateClassLevels(const FClassLevels& Levels) const
 		BarbarianNum->SetText(FText::AsNumber(Levels.Barbarian));
 	}
 }
+
+void USelectedClassesWidget::UpdateCurrentWeapon(const FString& WeaponName) const
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->SetText(FText::FromString(WeaponName));
+	}
+}

@@ -13,6 +13,8 @@
 #include "lesta_academy_test/Game/UI/PlayerLostFightWidget/PlayerLostFightWidget.h"
 #include "lesta_academy_test/Game/UI/PlayerWonFightWidget/PlayerWonFightWidget.h"
 #include "lesta_academy_test/Game/UI/EndOfGameWidget/EndOfGameWidget.h"
+#include "lesta_academy_test/Game/UI/HUDWidget/HUDWidget.h"
+#include "lesta_academy_test/Game/UI/SelectedClassesWidget/SelectedClassesWidget.h"
 #include "lesta_academy_test/Game/Weapon/Weapon.h"
 
 AMyGameMode::AMyGameMode()
@@ -196,11 +198,6 @@ void AMyGameMode::DoTurn()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("=== Next turn ==="));
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple,
-			TEXT("----- Следующий ход -----"));
-	}
 	
 	if (IsPlayerTurn)
 	{
@@ -209,11 +206,6 @@ void AMyGameMode::DoTurn()
 		{
 			Player->PlayAttackEffect(Enemy, false);
 			UE_LOG(LogTemp, Warning, TEXT("Player missed the attack!"));
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald,
-					TEXT("Игрок промахнулся"));
-			}
 		}
 		else
 		{
@@ -235,11 +227,6 @@ void AMyGameMode::DoTurn()
 		{
 			Enemy->PlayAttackEffect(Player, false);
 			UE_LOG(LogTemp, Warning, TEXT("Enemy missed the attack!"));
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald,
-					TEXT("Враг промахнулся"));
-			}
 		}
 		else
 		{
@@ -366,14 +353,32 @@ void AMyGameMode::OnPlayerChangeWeapon()
 	if (Player && Enemy && Enemy->Weapon)
 	{
 		Player->Weapon = Enemy->Weapon;
-
-		const FString Message = FString::Printf(TEXT("Игрок заменил оружие на: %s"),
-			*Player->Weapon->WeaponName.ToString());
-		
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, Message);
-		
 		UE_LOG(LogTemp, Warning, TEXT("Player changed weapon to: %s"), *Player->Weapon->GetName());
+
+		// Обновляем текущее оружие в виджете
+		const FString WeaponName = Player->Weapon->WeaponName.ToString();
+		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (!PC)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Error getting PlayerController"));
+			return;
+		}
+
+		AMyHUD* HUD = Cast<AMyHUD>(PC->GetHUD());
+		if (!HUD)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Error getting HUD"));
+			return;
+		}
+
+		UHUDWidget* HUDWidget = HUD->GetHUDWidget();
+		if (!HUDWidget)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Error getting HUDWidget"));
+			return;
+		}
+
+		HUDWidget->SelectedClassesWidget->UpdateCurrentWeapon(WeaponName);
 	}
 }
 

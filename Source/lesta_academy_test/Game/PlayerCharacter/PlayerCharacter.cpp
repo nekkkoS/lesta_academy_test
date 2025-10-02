@@ -87,6 +87,31 @@ void APlayerCharacter::UpdateLevel(const ECharacterClass ClassForUpLevel)
 		{
 			Weapon = Row->DefaultWeapon;
 			UE_LOG(LogTemp, Log, TEXT("Weapon set to %s"), *Weapon->WeaponName.ToString());
+
+			// Обновляем текущее оружие в виджете
+			const FString WeaponName = Weapon->WeaponName.ToString();
+			APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			if (!PC)
+			{
+				UE_LOG(LogTemp, Error, TEXT("Error getting PlayerController"));
+				return;
+			}
+
+			AMyHUD* HUD = Cast<AMyHUD>(PC->GetHUD());
+			if (!HUD)
+			{
+				UE_LOG(LogTemp, Error, TEXT("Error getting HUD"));
+				return;
+			}
+
+			UHUDWidget* HUDWidget = HUD->GetHUDWidget();
+			if (!HUDWidget)
+			{
+				UE_LOG(LogTemp, Error, TEXT("Error getting HUDWidget"));
+				return;
+			}
+
+			HUDWidget->SelectedClassesWidget->UpdateCurrentWeapon(WeaponName);
 		}
 		
 		if (Level >= 1 && Row->BonusAtLevel1) BonusSystem->AddBonus(Row->BonusAtLevel1);

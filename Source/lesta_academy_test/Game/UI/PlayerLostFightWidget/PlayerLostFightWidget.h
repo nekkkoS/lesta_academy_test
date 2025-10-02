@@ -15,21 +15,4 @@ UCLASS()
 class LESTA_ACADEMY_TEST_API UPlayerLostFightWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
-protected:
-
-	virtual void NativeConstruct() override;
-
-	virtual void NativeDestruct() override;
-
-private:
-
-	UPROPERTY(meta = (BindWidget))
-	UBackgroundBlur* BGBlur;
-
-	UPROPERTY(meta = (BindWidget))
-	UButton* RestartGameBtn;
-
-	UFUNCTION()
-	void OnRestartGameClicked();
 };

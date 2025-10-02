@@ -37,9 +37,6 @@ protected:
 private:
 
 	UPROPERTY(meta = (BindWidget))
-	UBackgroundBlur* BGBlur;
-
-	UPROPERTY(meta = (BindWidget))
 	UButton* ChangeWeaponBtn;
 
 	UPROPERTY(meta = (BindWidget))
