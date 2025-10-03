@@ -147,6 +147,32 @@ void AMyGameMode::HandleClassSelected(ECharacterClass CharacterClass)
 		return;
 	}
 
+	// Обновляем базовые статы в виджете (не самое лучшее место для этого)
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!PC)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error getting PlayerController"));
+		return;
+	}
+
+	AMyHUD* HUD = Cast<AMyHUD>(PC->GetHUD());
+	if (!HUD)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error getting HUD"));
+		return;
+	}
+
+	UHUDWidget* HUDWidget = HUD->GetHUDWidget();
+	if (!HUDWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Error getting HUDWidget"));
+		return;
+	}
+	
+	HUDWidget->SelectedClassesWidget->UpdateBaseStats(Player->GetStrength(), Player->GetAgility(),
+		Player->GetEndurance());
+
+	
 	Player->UpdateLevel(CharacterClass);
 	StartFight();
 }
@@ -363,7 +389,6 @@ void AMyGameMode::OnPlayerChangeWeapon()
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, Message);
 		
 		// Обновляем текущее оружие в виджете
-		const FString WeaponName = Player->Weapon->WeaponName.ToString();
 		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		if (!PC)
 		{
@@ -385,6 +410,7 @@ void AMyGameMode::OnPlayerChangeWeapon()
 			return;
 		}
 
+		const FString WeaponName = Player->Weapon->WeaponName.ToString();
 		HUDWidget->SelectedClassesWidget->UpdateCurrentWeapon(WeaponName);
 	}
 }

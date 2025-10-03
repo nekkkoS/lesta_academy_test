@@ -18,11 +18,25 @@ class LESTA_ACADEMY_TEST_API USelectedClassesWidget : public UUserWidget
 
 public:
 
-	void UpdateClassLevels(const FClassLevels& Levels) const;
+	void UpdateBaseStats(int32 InStrength, int32 InAgility, int32 InEndurance) const;
 
 	void UpdateCurrentWeapon(const FString& WeaponName) const;
 
+	void UpdateClassLevels(const FClassLevels& Levels) const;
+
 private:
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* BaseStrengthNum;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* BaseAgilityNum;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* BaseEnduranceNum;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* CurrentWeapon;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* RogueNum;
@@ -32,7 +46,4 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* BarbarianNum;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* CurrentWeapon;
 };

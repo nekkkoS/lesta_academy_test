@@ -6,26 +6,21 @@
 #include "Components/TextBlock.h"
 #include "lesta_academy_test/Game/PlayerCharacter/PlayerCharacter.h"
 
-void USelectedClassesWidget::UpdateClassLevels(const FClassLevels& Levels) const
+void USelectedClassesWidget::UpdateBaseStats(int32 InStrength, int32 InAgility, int32 InEndurance) const
 {
-	if (RogueNum)
-	{
-		RogueNum->SetText(FText::AsNumber(Levels.Rogue));
-	}
-	if (WarriorNum)
-	{
-		WarriorNum->SetText(FText::AsNumber(Levels.Warrior));
-	}
-	if (BarbarianNum)
-	{
-		BarbarianNum->SetText(FText::AsNumber(Levels.Barbarian));
-	}
+	BaseStrengthNum->SetText(FText::AsNumber(InStrength));
+	BaseAgilityNum->SetText(FText::AsNumber(InAgility));
+	BaseEnduranceNum->SetText(FText::AsNumber(InEndurance));
 }
 
 void USelectedClassesWidget::UpdateCurrentWeapon(const FString& WeaponName) const
 {
-	if (CurrentWeapon)
-	{
-		CurrentWeapon->SetText(FText::FromString(WeaponName));
-	}
+	CurrentWeapon->SetText(FText::FromString(WeaponName));
+}
+
+void USelectedClassesWidget::UpdateClassLevels(const FClassLevels& Levels) const
+{
+	RogueNum->SetText(FText::AsNumber(Levels.Rogue));
+	WarriorNum->SetText(FText::AsNumber(Levels.Warrior));
+	BarbarianNum->SetText(FText::AsNumber(Levels.Barbarian));
 }

@@ -89,7 +89,6 @@ void APlayerCharacter::UpdateLevel(const ECharacterClass ClassForUpLevel)
 			UE_LOG(LogTemp, Log, TEXT("Weapon set to %s"), *Weapon->WeaponName.ToString());
 
 			// Обновляем текущее оружие в виджете
-			const FString WeaponName = Weapon->WeaponName.ToString();
 			APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 			if (!PC)
 			{
@@ -111,6 +110,7 @@ void APlayerCharacter::UpdateLevel(const ECharacterClass ClassForUpLevel)
 				return;
 			}
 
+			const FString WeaponName = Weapon->WeaponName.ToString();
 			HUDWidget->SelectedClassesWidget->UpdateCurrentWeapon(WeaponName);
 		}
 		
