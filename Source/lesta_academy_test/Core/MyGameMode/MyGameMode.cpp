@@ -55,7 +55,7 @@ void AMyGameMode::BeginPlay()
 	
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	PC->bShowMouseCursor = true;
-	// PC->SetInputMode(FInputModeUIOnly());
+	PC->SetInputMode(FInputModeUIOnly());
 	
 	StartNewGame();
 }
@@ -353,8 +353,15 @@ void AMyGameMode::OnPlayerChangeWeapon()
 	if (Player && Enemy && Enemy->Weapon)
 	{
 		Player->Weapon = Enemy->Weapon;
+		
 		UE_LOG(LogTemp, Warning, TEXT("Player changed weapon to: %s"), *Player->Weapon->GetName());
-
+		
+		const FString Message = FString::Printf(TEXT("Игрок заменил оружие на: %s"),
+			*Player->Weapon->WeaponName.ToString());
+		
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, Message);
+		
 		// Обновляем текущее оружие в виджете
 		const FString WeaponName = Player->Weapon->WeaponName.ToString();
 		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
